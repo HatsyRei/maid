@@ -1,15 +1,14 @@
-import AssistantImageView from "@/components/views/assistant-image-view";
-import UserImageView from "@/components/views/user-image-view";
 import { useSystem } from "@/context";
 import Icon from '@expo/vector-icons/MaterialCommunityIcons';
 import { MessageNode } from "message-nodes";
+import { memo, useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 
 function MessageRoleView({ message }: { message: MessageNode }) {
   const { userName, assistantName, colorScheme } = useSystem();
 
-  const styles = StyleSheet.create({
+  const styles = useMemo(() => StyleSheet.create({
     row: {
       flexDirection: "row",
       alignItems: "center",
@@ -21,7 +20,7 @@ function MessageRoleView({ message }: { message: MessageNode }) {
       fontWeight: "bold",
       marginLeft: 8,
     },
-  });
+  }), [colorScheme]);
 
   const roleNames: Record<string, string | undefined> = {
     user: userName,
@@ -29,8 +28,8 @@ function MessageRoleView({ message }: { message: MessageNode }) {
   };
 
   const avatars: Record<string, React.ReactNode> = {
-    user: <UserImageView size={28} />,
-    assistant: <AssistantImageView size={28} />,
+    user: <Icon name="account" size={28} color={colorScheme.secondary} />,
+    assistant: <Icon name="assistant" size={28} color={colorScheme.secondary} />,
   };
 
   const role = roleNames[message.role] ?? (message.role.charAt(0).toUpperCase() + message.role.slice(1));
@@ -46,4 +45,4 @@ function MessageRoleView({ message }: { message: MessageNode }) {
   );
 }
 
-export default MessageRoleView;
+export default memo(MessageRoleView);
