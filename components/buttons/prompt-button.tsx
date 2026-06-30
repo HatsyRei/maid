@@ -1,25 +1,20 @@
 import { MaterialIconButton } from "@/components/buttons/icon-button";
 import { useChat, useLLM, useSystem } from "@/context";
 import getMetadata from "@/utilities/metadata";
+import { createStreamWriter } from "@/utilities/stream-writer";
 import { randomUUID } from "expo-crypto";
-import { ImagePickerAsset } from "expo-image-picker";
-import { ExpoSpeechRecognitionModule } from "expo-speech-recognition";
-import { addNode, getConversation, updateContent } from "message-nodes";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { addNode, getConversation } from "message-nodes";
+import { Dispatch, SetStateAction } from "react";
 
 interface PromptButtonProps {
   promptText: string; 
   setPromptText: Dispatch<SetStateAction<string>>;
-  images: Array<ImagePickerAsset>;
-  setImages: Dispatch<SetStateAction<Array<ImagePickerAsset>>>;
 };
 
-function PromptButton({ promptText, setPromptText, images, setImages }: PromptButtonProps) {
+function PromptButton({ promptText, setPromptText }: PromptButtonProps) {
   const { mappings, setMappings, root, setRoot } = useChat();
   const { colorScheme, systemPrompt } = useSystem();
   const LLM = useLLM();
-
-  const [dictating, setDictating] = useState(false);
 
   const prompt = () => {
     if (!LLM.ready) return;
@@ -48,22 +43,6 @@ function PromptButton({ promptText, setPromptText, images, setImages }: PromptBu
     next = addNode<string>(next, id, "user", promptText, root || parent, parent, undefined, getMetadata());
     setPromptText("");
 
-    if (images.length > 0) {
-      const filePaths: Array<string> = [];
-
-      for (const image of images) {
-        if (image.base64 && image.mimeType) {
-          filePaths.push(`data:${image.mimeType};base64,${image.base64}`);
-        }
-      }
-
-      next = updateContent(next, id, prev => prev, meta => ({
-        ...meta,
-        images: filePaths,
-      }));
-      setImages([]);
-    }
-
     const responseId = randomUUID();
     next = addNode<string>(
       next,
@@ -77,7 +56,7 @@ function PromptButton({ promptText, setPromptText, images, setImages }: PromptBu
         ...getMetadata(),
         ...LLM.parameters,
         provider: LLM.type.toLowerCase().replace(" ", "-"),
-        model: LLM.model || LLM.modelKey,
+        model: LLM.model,
       }
     );
 
@@ -86,96 +65,11 @@ function PromptButton({ promptText, setPromptText, images, setImages }: PromptBu
 
     const conversation = getConversation(next, root || parent);
 
-    let buffer = "";
-    LLM.prompt(conversation, (chunk: string) => {
-      buffer += chunk;
-      setMappings(prev =>
-        updateContent(prev, responseId, buffer, meta => ({
-          ...meta,
-          updateTime: new Date().toISOString(),
-        }))
-      );
-    });
+    const writer = createStreamWriter(setMappings, responseId);
+    LLM.prompt(conversation, writer.push).finally(writer.flush);
   };
 
-  const dictate = async () => {
-    try {
-      let granted = false;
-      const perms = await ExpoSpeechRecognitionModule.getPermissionsAsync();
-      if (perms.granted) {
-        granted = true;
-      }
-      else if (perms.canAskAgain) {
-        const request = await ExpoSpeechRecognitionModule.requestPermissionsAsync();
-        granted = request.granted;
-      }
-      else {
-        console.warn("Microphone permission denied and cannot ask again.");
-        return;
-      }
-
-      if (!granted) {
-        console.warn("Microphone permission denied.");
-        return;
-      }
-
-      ExpoSpeechRecognitionModule.start({ 
-        lang: "en-US",
-        addsPunctuation: true,
-        androidIntentOptions: {
-          EXTRA_SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS: 10000,
-          EXTRA_MASK_OFFENSIVE_WORDS: false,
-        } 
-      });
-    } catch (error) {
-      console.error("Error requesting microphone permission:", error);
-    }
-  };
-
-  useEffect(() => {
-    const startListener = ExpoSpeechRecognitionModule.addListener("start", () => {
-      setDictating(true);
-    });
-
-    const endListener = ExpoSpeechRecognitionModule.addListener("end", () => {
-      setDictating(false);
-    });
-
-    const resultListener = ExpoSpeechRecognitionModule.addListener("result", (event) => {
-      setPromptText(prev => {
-        const transcript = event.results?.[0]?.transcript ?? "";
-        const glue = prev.trim().length > 0 ? " " : "";
-        return prev + glue + transcript;
-      });
-      ExpoSpeechRecognitionModule.stop();
-    });
-
-    // If the lib supports it, this is worth having:
-    const errorListener = ExpoSpeechRecognitionModule.addListener?.("error" as any, (event: any) => {
-      console.error("Speech recognition error:", event);
-      setDictating(false);
-    });
-
-    return () => {
-      startListener.remove();
-      endListener.remove();
-      resultListener.remove();
-      errorListener?.remove?.();
-    };
-  }, [setPromptText]);
-
-  if (dictating) {
-    return (
-      <MaterialIconButton
-        testID="stop-dictate-button"
-        icon="mic-off"
-        size={28}
-        color={colorScheme.primary}
-        onPress={() => ExpoSpeechRecognitionModule.stop()}
-      />
-    );
-  }
-  else if (LLM.ready && LLM.busy) {
+  if (LLM.ready && LLM.busy) {
     return (
       <MaterialIconButton
         testID="stop-button"
@@ -186,26 +80,15 @@ function PromptButton({ promptText, setPromptText, images, setImages }: PromptBu
       />
     );
   }
-  else if (promptText.trim().length > 0) {
-    return (
-      <MaterialIconButton
-        testID="send-button"
-        icon="send"
-        size={28}
-        color={colorScheme.primary}
-        onPress={prompt}
-        disabled={!LLM.ready}
-      />
-    );
-  }
 
   return (
     <MaterialIconButton
-      testID="dictate-button"
-      icon="mic"
+      testID="send-button"
+      icon="send"
       size={28}
       color={colorScheme.primary}
-      onPress={dictate} 
+      onPress={prompt}
+      disabled={!LLM.ready || promptText.trim().length === 0}
     />
   );
 }
