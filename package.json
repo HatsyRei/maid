@@ -6,9 +6,7 @@
   "scripts": {
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
-    "android": "expo run:android",
     "build-android": "export JAVA_HOME=$HOME/.local/jdks/jdk-21 ANDROID_HOME=$HOME/android-sdk ANDROID_SDK_ROOT=$HOME/android-sdk PATH=$HOME/.local/jdks/jdk-21/bin:$HOME/android-sdk/cmdline-tools/latest/bin:$HOME/android-sdk/platform-tools:$PATH; cd android && ./gradlew assembleRelease",
-    "build-android-debug": "export JAVA_HOME=$HOME/.local/jdks/jdk-21 ANDROID_HOME=$HOME/android-sdk ANDROID_SDK_ROOT=$HOME/android-sdk PATH=$HOME/.local/jdks/jdk-21/bin:$HOME/android-sdk/cmdline-tools/latest/bin:$HOME/android-sdk/platform-tools:$PATH; cd android && ./gradlew assembleDebug",
     "build-android-bundle": "export JAVA_HOME=$HOME/.local/jdks/jdk-21 ANDROID_HOME=$HOME/android-sdk ANDROID_SDK_ROOT=$HOME/android-sdk PATH=$HOME/.local/jdks/jdk-21/bin:$HOME/android-sdk/cmdline-tools/latest/bin:$HOME/android-sdk/platform-tools:$PATH; cd android && ./gradlew bundleRelease",
     "ios": "expo run:ios",
     "web": "expo start --web",
