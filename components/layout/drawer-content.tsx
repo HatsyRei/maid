@@ -36,11 +36,6 @@ function DrawerContent({ navigation }: { navigation?: { closeDrawer: () => void 
     }
   };
 
-  const clearChats = () => {
-    setRoot(undefined);
-    setMappings({});
-  };
-
   const createChat = () => {
     const id = randomUUID();
     const time = new Date();
@@ -106,13 +101,6 @@ function DrawerContent({ navigation }: { navigation?: { closeDrawer: () => void 
             style={styles.button}
             size={24}
             onPress={loadMappings}
-          />
-          <MaterialIconButton
-            testID="clear-chats-button"
-            icon="delete"
-            style={styles.button}
-            size={24}
-            onPress={clearChats}
           />
           <MaterialIconButton
             testID="new-chat-button"

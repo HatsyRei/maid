@@ -54,22 +54,6 @@ describe("Chat page", () => {
     expect(chatButton).toBeOnTheScreen();
   });
 
-  it("should clear all chats when the clear chats button is pressed", async () => {
-    const openDrawerButton = await screen.findByTestId("open-drawer-button");
-    fireEvent.press(openDrawerButton);
-
-    const newChatButton = await screen.findByTestId("new-chat-button");
-    fireEvent.press(newChatButton);
-
-    const chatButton = await screen.findByTestId("chat-button-0");
-    expect(chatButton).toBeOnTheScreen();
-
-    const clearChatsButton = await screen.findByTestId("clear-chats-button");
-    fireEvent.press(clearChatsButton);
-
-    expect(chatButton).not.toBeOnTheScreen();
-  });
-
   it("should open the menu popover when the menu button is pressed", async () => {
     const menuButton = await screen.findByTestId("menu-button");
     fireEvent.press(menuButton);
