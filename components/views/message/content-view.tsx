@@ -6,7 +6,7 @@ import { createStreamWriter } from "@/utilities/stream-writer";
 import Markdown from '@novastera-oss/react-native-markdown-display';
 import { randomUUID } from "expo-crypto";
 import { addNode, branchNode, getConversation, MessageNode, updateContent } from "message-nodes";
-import { memo, useMemo, useState } from "react";
+import { memo, useEffect, useMemo, useState } from "react";
 import { Alert, StyleSheet, Text, TextInput, TouchableHighlight, View } from "react-native";
 
 function MessageContentView({ message }: { message: MessageNode }) {
@@ -15,6 +15,16 @@ function MessageContentView({ message }: { message: MessageNode }) {
   const { mappings, setMappings, editing, setEditing } = useChat();
   const { colorScheme } = useSystem();
   const LLM = useLLM();
+
+  // Keep the edit buffer in sync with the message content whenever this message
+  // enters edit mode. The initial useState value is captured at mount, when an
+  // assistant message is still empty (mid-stream), so without this the edit
+  // field would show stale/empty text right after a response finishes.
+  useEffect(() => {
+    if (editing === message.id) {
+      setEditText(message.content);
+    }
+  }, [editing, message.id, message.content]);
 
   const styles = useMemo(() => StyleSheet.create({
     view: {
