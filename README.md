@@ -7,7 +7,6 @@
 <div align="center">
   
 [![Build Android](https://github.com/Mobile-Artificial-Intelligence/maid/actions/workflows/build-android.yml/badge.svg)](https://github.com/Mobile-Artificial-Intelligence/maid/actions/workflows/build-android.yml)
-[![Build Manual](https://github.com/Mobile-Artificial-Intelligence/maid/actions/workflows/build-manual.yml/badge.svg)](https://github.com/Mobile-Artificial-Intelligence/maid/actions/workflows/build-manual.yml)
 [![Test](https://github.com/Mobile-Artificial-Intelligence/maid/actions/workflows/test.yml/badge.svg)](https://github.com/Mobile-Artificial-Intelligence/maid/actions/workflows/test.yml)
 [![Code Quality](https://github.com/Mobile-Artificial-Intelligence/maid/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/Mobile-Artificial-Intelligence/maid/actions/workflows/github-code-scanning/codeql)
 
@@ -54,13 +53,9 @@ This fork is optimised for personal use, battery efficiency and UI fluidity:
 
 - **No on-device inference** — the llama.cpp / llama.rn engine and model download flow are removed, dramatically reducing app size and eliminating heavy background compute and battery drain.
 - **OpenAI-only** — the Anthropic, DeepSeek, Mistral, Novita and Ollama providers are removed; the app talks to a single OpenAI-compatible endpoint, which can also be a local server.
-- **No accounts or remote sync** — authentication and Supabase backup are removed; everything is stored locally for privacy and to avoid background network traffic.
+- **No accounts or remote sync** — authentication and remote backup are removed; everything is stored locally for privacy and to avoid background network traffic.
 - **No voice or image features** — speech recognition, text-to-speech and image attachments/avatars are removed to slim down permissions and dependencies.
 - **Smoother chat UI** — streamed responses are batched through a lightweight writer, message components are memoised, and the conversation list uses a custom scrollbar with tuned virtualisation for fluid scrolling through long histories.
-
-## Manual
-
-The user manual is available from [releases](https://github.com/Mobile-Artificial-Intelligence/maid/releases/latest) in PDF format, or can be built from source using the instructions below.
 
 ## Cloning
 To clone the repository, use the following command:

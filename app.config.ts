@@ -44,8 +44,6 @@ export default ({ config }: { config: ExpoConfig }): ExpoConfig => ({
       },
     ],
     "expo-font",
-    "expo-web-browser",
-    "expo-secure-store",
     "expo-localization",
     [
       "expo-build-properties",

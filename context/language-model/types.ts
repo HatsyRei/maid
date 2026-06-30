@@ -9,7 +9,6 @@ export type LanguageModelType = typeof LanguageModelTypes[number];
 interface LanguageModelBaseProps {
   ready: boolean;
   busy: boolean;
-  imagesSupported: boolean;
   parameters: Record<string, string | number | boolean>;
   setParameters: React.Dispatch<React.SetStateAction<Record<string, string | number | boolean>>>;
   prompt: (

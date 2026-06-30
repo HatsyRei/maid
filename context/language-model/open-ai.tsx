@@ -133,7 +133,6 @@ export function OpenAIProvider({ children }: { children: React.ReactNode }) {
   const value = {
     ready: !!openai && !!model,
     busy,
-    imagesSupported: false,
     baseURL,
     setBaseURL,
     resetBaseURL,
