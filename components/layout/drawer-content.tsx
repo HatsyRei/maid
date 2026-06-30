@@ -1,18 +1,14 @@
 import ChatButton from "@/components/buttons/chat-button";
 import { MaterialIconButton } from "@/components/buttons/icon-button";
 import { useChat, useSystem } from "@/context";
-import useAuthentication from "@/hooks/use-authentication";
 import { validateMappings } from "@/utilities/mappings";
 import { randomUUID } from "expo-crypto";
 import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
-import { useRouter } from "expo-router";
 import { addNode, getRoots } from "message-nodes";
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 
 function DrawerContent({ navigation }: { navigation?: { closeDrawer: () => void } }) {
-  const router = useRouter();
-  const [authenticated, anonymous] = useAuthentication();
   const { mappings, setMappings, setRoot } = useChat();
   const { colorScheme } = useSystem();
   
@@ -97,16 +93,6 @@ function DrawerContent({ navigation }: { navigation?: { closeDrawer: () => void 
       flex: 1,
       flexDirection: "column"
     },
-    account: {
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "space-around",
-      paddingTop: 12,
-      paddingBottom: 24,
-    },
-    accountText: {
-      color: colorScheme.primary,
-    }
   });
     
   return (
@@ -141,29 +127,6 @@ function DrawerContent({ navigation }: { navigation?: { closeDrawer: () => void 
       <ScrollView style={styles.sessions}>
         {getRoots<string>(mappings).map((root, index) => <ChatButton testID={`chat-button-${index}`} key={root.id} node={root} />)}
       </ScrollView>
-      <View style={styles.divider} />
-      <View style={styles.account}>
-        {authenticated && !anonymous ? (
-          <TouchableOpacity testID="account-button" onPress={() => { navigation?.closeDrawer(); router.push("/account"); }}>
-            <Text style={styles.accountText}>Account</Text>
-          </TouchableOpacity>
-        ) : (
-          <>
-            <TouchableOpacity
-              testID="login-button"
-              onPress={() => { navigation?.closeDrawer(); router.push("/account/login"); }}
-            >
-                <Text style={styles.accountText}>Login</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              testID="register-button"
-              onPress={() => { navigation?.closeDrawer(); router.push("/account/register"); }}
-            >
-              <Text style={styles.accountText}>Register</Text>
-            </TouchableOpacity>
-          </>
-        )}
-      </View>
     </View>
   );
 }
