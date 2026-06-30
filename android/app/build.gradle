@@ -197,6 +197,15 @@ android {
     packagingOptions {
         jniLibs {
             useLegacyPackaging (findProperty('expo.useLegacyPackaging')?.toBoolean() ?: false)
+            // Strip Fresco-only image decoders. Markdown/app images render through
+            // expo-image (Glide), and there is no React Native <Image> in this app,
+            // so Fresco's GIF decoder and JPEG transcoder are never reached.
+            // NOTE: do NOT exclude libavif_android.so — that one belongs to
+            // expo-image's AVIF support, which IS used by the image pipeline.
+            excludes += [
+                "**/libanimation-decoder-gif.so", // Fresco animated GIF decoder (~275KB)
+                "**/libnative-imagetranscoder.so",// Fresco JPEG/PNG transcoder (~585KB)
+            ]
         }
     }
     androidResources {
