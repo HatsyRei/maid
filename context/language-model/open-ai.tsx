@@ -8,6 +8,16 @@ import { OpenAIContextProps } from "./types";
 
 const DEFAULT_BASE_URL = "https://api.openai.com/v1";
 
+function isOfficialOpenAIEndpoint(baseURL: string): boolean {
+  try {
+    const normalized = baseURL.replace(/\/+$/, "");
+    const official = DEFAULT_BASE_URL.replace(/\/+$/, "");
+    return normalized === official;
+  } catch {
+    return false;
+  }
+}
+
 const OpenAIContext = createContext<OpenAIContextProps | undefined>(undefined);
 
 export function OpenAIProvider({ children }: { children: React.ReactNode }) {
@@ -25,21 +35,25 @@ export function OpenAIProvider({ children }: { children: React.ReactNode }) {
   const [models, setModels] = useState<Array<string>>([]);
 
   useEffect(() => {
-    if (!apiKey) {
+    const resolvedBaseURL = baseURL ?? DEFAULT_BASE_URL;
+    const requiresApiKey = isOfficialOpenAIEndpoint(resolvedBaseURL);
+
+    if (requiresApiKey && !apiKey) {
       console.warn("OpenAI API key not set");
       return;
     }
 
     try {
-      new URL(baseURL ?? "");
+      new URL(resolvedBaseURL);
     } catch {
       return;
     }
 
     try {
       const openaiInstance = new OpenAI({
-        apiKey,
-        baseURL,
+        // OpenAI SDK expects a key. For local compatible endpoints, allow a placeholder.
+        apiKey: apiKey ?? "local-openai-compatible",
+        baseURL: resolvedBaseURL,
         defaultHeaders: headers,
         fetch: expoFetch as typeof fetch,
       });
