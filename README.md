@@ -32,18 +32,31 @@
 
 Maid is a free and open source application for interfacing with OpenAI-compatible models remotely. Maid is built using React Native and is available for Android. The application is designed to be fast, efficient and user-friendly, making it easy for users to interact with their models on the go.
 
-For text to speech functionality check out Maid's companion app [Maise](https://github.com/Mobile-Artificial-Intelligence/maise).
+> **About this fork**
+>
+> This is a personal-use fork of Maid that has been deliberately pared down to a single purpose: a lightweight client for OpenAI and OpenAI-compatible endpoints. Compared to upstream Maid, it removes on-device (llama.cpp / llama.rn) inference, all non-OpenAI providers, account sync, voice and image features. The result is a smaller, leaner app that is gentler on the battery and noticeably more fluid to use.
+>
+> The motivation is simple: on-device inference and the extra provider integrations added significant binary size, background activity and battery drain that are unnecessary when you only ever talk to a remote endpoint. Stripping them back keeps the UI responsive and the device cool.
 
 ## Features
 
-- **OpenAI-compatible endpoints** — connect to OpenAI or any OpenAI-compatible endpoint with your own API key
+- **OpenAI-compatible endpoints** — connect to OpenAI or any OpenAI-compatible endpoint (including local servers) with your own API key
 - **Conversation management** — create, rename, delete, export, and import chats as JSON
 - **Customisable parameters** — tune temperature, top-p, top-k, context length, and other generation parameters per session
 - **Custom system prompt** — set a global system prompt and assistant persona
-- **Voice output** — pair with [Maise](https://github.com/Mobile-Artificial-Intelligence/maise) for text-to-speech
 - **Privacy-first local storage** — chats and settings stay on-device by default
 - **Material You theming** — light and dark themes that follow your system preference
 - **Fully open source** — MIT licensed, no telemetry, no ads
+
+## What's different in this fork
+
+This fork is optimised for personal use, battery efficiency and UI fluidity:
+
+- **No on-device inference** — the llama.cpp / llama.rn engine and model download flow are removed, dramatically reducing app size and eliminating heavy background compute and battery drain.
+- **OpenAI-only** — the Anthropic, DeepSeek, Mistral, Novita and Ollama providers are removed; the app talks to a single OpenAI-compatible endpoint, which can also be a local server.
+- **No accounts or remote sync** — authentication and Supabase backup are removed; everything is stored locally for privacy and to avoid background network traffic.
+- **No voice or image features** — speech recognition, text-to-speech and image attachments/avatars are removed to slim down permissions and dependencies.
+- **Smoother chat UI** — streamed responses are batched through a lightweight writer, message components are memoised, and the conversation list uses a custom scrollbar with tuned virtualisation for fluid scrolling through long histories.
 
 ## Manual
 
