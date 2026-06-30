@@ -1,7 +1,6 @@
 
 import DefaultHeader from '@/components/layout/default-header';
 import { ChatContextProvider, LanguageModelProvider, SystemContextProvider, useSystem } from "@/context";
-import { installConsoleCapture } from '@/utilities/logger';
 import { NativeStackHeaderProps } from "@react-navigation/native-stack";
 import { Buffer } from "buffer";
 import { Stack } from "expo-router";
@@ -10,8 +9,6 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import "react-native-url-polyfill/auto";
 
 (global as any).Buffer = Buffer;
-
-installConsoleCapture();
 
 function RootLayout() {
   return (
@@ -43,18 +40,6 @@ function RootLayoutContent() {
           name="chat" 
           options={{ 
             headerShown: false
-          }} 
-        />
-        <Stack.Screen 
-          name="account" 
-          options={{ 
-            headerShown: true 
-          }} 
-        />
-        <Stack.Screen 
-          name="download" 
-          options={{ 
-            headerShown: true 
           }} 
         />
         <Stack.Screen 
