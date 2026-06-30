@@ -1663,7 +1663,7 @@
     invariant "^2.2.4"
     nullthrows "^1.1.1"
 
-"@react-navigation/bottom-tabs@^7.2.0", "@react-navigation/bottom-tabs@^7.3.10":
+"@react-navigation/bottom-tabs@^7.3.10":
   version "7.13.0"
   resolved "https://registry.npmjs.org/@react-navigation/bottom-tabs/-/bottom-tabs-7.13.0.tgz"
   integrity sha512-qxxjRDpjhZ4vIZqG4rBU1Vx2jgOAO/ciUKc9sJqVlTM005E2E+aK1EaE3lGaBDyZxTpjonollAucZcqL7OTscQ==

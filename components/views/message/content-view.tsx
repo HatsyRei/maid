@@ -1,4 +1,4 @@
-import { MaterialCommunityIconButton } from "@/components/buttons/icon-button";
+import { MaterialIconButton } from "@/components/buttons/icon-button";
 import { useChat, useLLM, useSystem } from "@/context";
 import getMetadata from "@/utilities/metadata";
 import splitReasoning from "@/utilities/reasoning";
@@ -155,11 +155,11 @@ function MessageContentView({ message }: { message: MessageNode }) {
         <View
           style={styles.controls}
         >
-          <MaterialCommunityIconButton
+          <MaterialIconButton
             icon="check"
             onPress={onEdit}
           />
-          <MaterialCommunityIconButton
+          <MaterialIconButton
             icon="close"
             onPress={onEditDone}
           />

@@ -1,4 +1,4 @@
-import { MaterialCommunityIconButton } from "@/components/buttons/icon-button";
+import { MaterialIconButton } from "@/components/buttons/icon-button";
 import { useChat, useLLM, useSystem } from "@/context";
 import getMetadata from "@/utilities/metadata";
 import { createStreamWriter } from "@/utilities/stream-writer";
@@ -51,21 +51,21 @@ function MessageControlsView({ message }: { message: MessageNode }) {
   return (
     <View style={styles.row}>
       {message.role === "assistant" &&
-        <MaterialCommunityIconButton
-          icon="reload"
+        <MaterialIconButton
+          icon="refresh"
           onPress={onRegenerate}
           disabled={!!editing || LLM.busy}
           color={colorScheme.secondary}
         />
       }
-      <MaterialCommunityIconButton
-        icon="pencil"
+      <MaterialIconButton
+        icon="edit"
         onPress={() => setEditing(message.id)}
         disabled={!!editing || LLM.busy}
         color={colorScheme.secondary}
       />
-      <MaterialCommunityIconButton
-        icon="menu-left"
+      <MaterialIconButton
+        icon="chevron-left"
         onPress={() => setMappings((prev) => lastChild(prev, message.parent!))}
         disabled={index <= 0 || !!editing || LLM.busy}
         color={colorScheme.secondary}
@@ -75,13 +75,13 @@ function MessageControlsView({ message }: { message: MessageNode }) {
       >
         {index + 1} / {siblings.length}
       </Text>
-      <MaterialCommunityIconButton
-        icon="menu-right"
+      <MaterialIconButton
+        icon="chevron-right"
         onPress={() => setMappings((prev) => nextChild(prev, message.parent!))}
         disabled={index === siblings.length - 1 || !!editing || LLM.busy}
         color={colorScheme.secondary}
       />
-      <MaterialCommunityIconButton
+      <MaterialIconButton
         icon="delete"
         onPress={() => deleteMessage(message.id)}
         disabled={!!editing || LLM.busy}
