@@ -1,57 +1,15 @@
 import { ColorScheme, createColorScheme } from "@/utilities/color-scheme";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Dispatch, SetStateAction, useEffect, useMemo, useRef, useState } from "react";
 
 interface ThemeData {
   colorScheme: ColorScheme;
-  accentColor: string;
-  setAccentColor: Dispatch<SetStateAction<string>>;
 }
 
+const DEFAULT_ACCENT_COLOR = "#2196F3";
+const COLOR_SCHEME = createColorScheme(DEFAULT_ACCENT_COLOR, "dark");
+
 function useTheme(): ThemeData {
-  const [accentColor, setAccentColor] = useState<string>("#2196F3");
-  const hydrated = useRef<boolean>(false);
-  
-  const colorScheme = useMemo<ColorScheme>(
-    () => createColorScheme(accentColor, "dark"),
-    [accentColor]
-  );
-  
-  const loadAccentColor = async () => {
-    try {
-      const storedColor = await AsyncStorage.getItem("accent_color");
-      if (storedColor) {
-        setAccentColor(storedColor);
-      }
-    } catch (error) {
-      console.error("Error loading accent color from storage:", error);
-    } finally {
-      hydrated.current = true;
-    }
-  };
-  
-  useEffect(() => {
-    loadAccentColor();
-  }, []);
-
-  const saveAccentColor = async () => {
-    try {
-      await AsyncStorage.setItem("accent_color", accentColor);
-    } catch (error) {
-      console.error("Error saving accent color to storage:", error);
-    }
-  };
-  
-  useEffect(() => {
-    if (hydrated.current) {
-      saveAccentColor();
-    }
-  }, [accentColor]);
-
   return {
-    colorScheme,
-    accentColor,
-    setAccentColor,
+    colorScheme: COLOR_SCHEME,
   };
 }
 

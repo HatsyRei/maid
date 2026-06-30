@@ -12,8 +12,6 @@ interface SystemContextProps {
   setAssistantName: (name: string | undefined) => void;
   systemPrompt: string | undefined;
   setSystemPrompt: (prompt: string | undefined) => void;
-  accentColor: string;
-  setAccentColor: (color: string) => void;
 }
 
 const SystemContext = createContext<SystemContextProps | undefined>(undefined);
@@ -34,7 +32,7 @@ export function SystemContextProvider({ children }: { children: ReactNode }) {
     defaultValue: "",
   });
 
-  const { colorScheme, accentColor, setAccentColor } = useTheme();
+  const { colorScheme } = useTheme();
   
   const value = useMemo(() => ({
     userName,
@@ -44,9 +42,7 @@ export function SystemContextProvider({ children }: { children: ReactNode }) {
     systemPrompt,
     setSystemPrompt,
     colorScheme,
-    accentColor,
-    setAccentColor
-  }), [userName, setUserName, assistantName, setAssistantName, systemPrompt, setSystemPrompt, colorScheme, accentColor, setAccentColor]);
+  }), [userName, setUserName, assistantName, setAssistantName, systemPrompt, setSystemPrompt, colorScheme]);
 
   return (
     <SystemContext.Provider value={value}>
