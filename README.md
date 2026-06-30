@@ -55,6 +55,7 @@ This fork is optimised for personal use, battery efficiency and UI fluidity:
 - **OpenAI-only** — the Anthropic, DeepSeek, Mistral, Novita and Ollama providers are removed; the app talks to a single OpenAI-compatible endpoint, which can also be a local server.
 - **No accounts or remote sync** — authentication and remote backup are removed; everything is stored locally for privacy and to avoid background network traffic.
 - **No voice or image features** — speech recognition, text-to-speech and image attachments/avatars are removed to slim down permissions and dependencies.
+- **Minimal Android permissions** — only network-related permissions remain; stale biometric/fingerprint, audio recording, and Play Install Referrer capabilities pulled in by removed libraries are stripped from the manifest.
 - **Smoother chat UI** — streamed responses are batched through a lightweight writer, message components are memoised, and the conversation list uses a custom scrollbar with tuned virtualisation for fluid scrolling through long histories.
 
 ## Cloning
