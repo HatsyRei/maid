@@ -5,9 +5,31 @@ import splitReasoning from "@/utilities/reasoning";
 import { createStreamWriter } from "@/utilities/stream-writer";
 import Markdown from '@novastera-oss/react-native-markdown-display';
 import { randomUUID } from "expo-crypto";
+import { Image, type ImageLoadEventData } from "expo-image";
 import { addNode, branchNode, getConversation, MessageNode, updateContent } from "message-nodes";
 import { memo, useEffect, useMemo, useState } from "react";
 import { Alert, StyleSheet, Text, TextInput, TouchableHighlight, View } from "react-native";
+
+// The markdown library's default image style is `{ flex: 1 }` with no height,
+// so a bare ![](url) collapses to zero height and never appears. Render images
+// through a bounded, auto-sizing expo-image so they stay visible.
+function MarkdownImage({ uri }: { uri: string }) {
+  const [aspectRatio, setAspectRatio] = useState<number | undefined>(undefined);
+
+  const onLoad = (event: ImageLoadEventData) => {
+    const { width, height } = event.source;
+    if (width && height) setAspectRatio(width / height);
+  };
+
+  return (
+    <Image
+      source={{ uri }}
+      style={{ width: "100%", aspectRatio: aspectRatio ?? 16 / 9 }}
+      contentFit="contain"
+      onLoad={onLoad}
+    />
+  );
+}
 
 function MessageContentView({ message }: { message: MessageNode }) {
   const [ showReasoning, setShowReasoning ] = useState<boolean>(false);
@@ -153,6 +175,14 @@ function MessageContentView({ message }: { message: MessageNode }) {
 
   const [content, reasoning] = splitReasoning(message);
 
+  const markdownRules = useMemo(() => ({
+    image: (node: { key: string; attributes: { src?: string } }) => {
+      const src = node.attributes?.src;
+      if (!src) return null;
+      return <MarkdownImage key={node.key} uri={String(src)} />;
+    },
+  }), []);
+
   if (editing === message.id) {
     return (
       <View style={styles.view}>
@@ -186,7 +216,7 @@ function MessageContentView({ message }: { message: MessageNode }) {
         </TouchableHighlight>
       )}
       {reasoning && showReasoning && <Text style={styles.reasoning}>{reasoning}</Text>}
-      {content && <Markdown style={markdownStyle}>{content}</Markdown>}
+      {content && <Markdown style={markdownStyle} rules={markdownRules}>{content}</Markdown>}
       {message.content.length === 0 && !message.child && (
         LLM.busy ?
           <Text style={styles.reasoning}>...</Text> :
