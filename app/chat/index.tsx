@@ -27,6 +27,7 @@ function Chat() {
   const lastThumbHeightRef = useRef(MIN_SCROLL_THUMB_HEIGHT);
   const [showScrollThumb, setShowScrollThumb] = useState(false);
   const showScrollThumbRef = useRef(showScrollThumb);
+  const [footerHeight, setFooterHeight] = useState(0);
   const conversation = useMemo(
     () => (root ? getConversation(mappings, root).slice(1) : []),
     [mappings, root],
@@ -146,6 +147,7 @@ function Chat() {
 
   const handleListLayout = (height: number) => {
     metricsRef.current.viewportHeight = height;
+    setFooterHeight(Math.max(height - 96, 0));
     updateThumbPosition();
   };
 
@@ -237,6 +239,7 @@ function Chat() {
           initialNumToRender={12}
           maxToRenderPerBatch={16}
           windowSize={15}
+          ListFooterComponent={<View style={{ height: footerHeight }} />}
         /> : <View style={styles.list} />}
         {showScrollThumb && <View style={styles.scrollIndicatorContainer}>
           <Animated.View
