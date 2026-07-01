@@ -15,6 +15,7 @@ function PromptInputField({ promptText, setPromptText }: PromptInputFieldProps) 
       color: colorScheme.onSurface,
       fontSize: 16,
       flex: 1,
+      maxHeight: 200,
       borderWidth: 0,
       marginHorizontal: 8,
     }
