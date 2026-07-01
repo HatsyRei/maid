@@ -18,11 +18,7 @@ function useMappings(): [Record<string, MessageNode<string, Record<string, any>>
   useEffect(() => {
     if (!hydrated.current) return;
 
-    const timeout = setTimeout(() => {
-      saveLocalMappings();
-    }, 500);
-
-    return () => clearTimeout(timeout);
+    saveLocalMappings();
   }, [mappings]);
 
   const loadLocalMappings = async () => {
