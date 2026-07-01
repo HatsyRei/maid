@@ -1,109 +1,17 @@
-import useAuthentication from '@/hooks/use-authentication';
 import { loadLocalMessages, saveLocalMessages } from '@/utilities/local-db';
 import { validateMappings } from '@/utilities/mappings';
-import getSupabase from '@/utilities/supabase';
 import { MessageNode } from 'message-nodes';
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 
-function useMappings(): [Record<string, MessageNode<string, Record<string, any>>>, Dispatch<SetStateAction<Record<string, MessageNode<string, Record<string, any>>>>>] {
-  const [authenticated, anonymous] = useAuthentication();
+function useMappings(paused: boolean = false): [Record<string, MessageNode<string, Record<string, any>>>, Dispatch<SetStateAction<Record<string, MessageNode<string, Record<string, any>>>>>] {
   const [mappings, setMappings] = useState<Record<string, MessageNode<string>>>({});
-
-  const saveSupabaseMappings = async () => {
-    const { data: { user }, error: userErr } = await getSupabase().auth.getUser();
-    if (userErr) {
-      console.error("getUser error:", userErr);
-      return;
-    }
-    if (!user) {
-      console.warn("Not signed in; skipping save");
-      return;
-    }
-
-    const nodes = Object.values(mappings);
-
-    const upsertData = nodes.map(node => ({
-      id: node.id,
-      user_id: user.id,
-      role: node.role,
-      content: node.content,
-      root: node.root,
-      parent: node.parent ?? null,
-      child: node.child ?? null,
-      metadata: {
-        ...node.metadata,
-        images: null, // Don't save images
-        createTime: node.metadata?.createTime || new Date().toISOString(),
-        updateTime: node.metadata?.updateTime || new Date().toISOString(),
-      }
-    }));
-
-    const { error } = await getSupabase()
-      .from("messages")
-      .upsert(upsertData, { onConflict: "id" }); // explicit
-
-    if (error) console.error("Error saving messages:", error);
-  };
-
-  useEffect(() => {
-    if (!authenticated || anonymous) return;
-
-    const timeout = setTimeout(() => {
-      saveSupabaseMappings();
-    }, 5000); // Save every 5 seconds
-
-    return () => clearTimeout(timeout);
-  }, [mappings, authenticated, anonymous]);
-
-  const loadSupabaseMappings = async () => {
-    if (anonymous) {
-      console.warn("User is anonymous; skipping Supabase load");
-      return;
-    }
-
-    const userResponse = await getSupabase().auth.getUser();
-    const user = userResponse.data.user;
-    
-    if (!user) {
-      throw new Error("No user logged in");
-    }
-
-    const { data, error } = await getSupabase()
-      .from('messages')
-      .select('*');
-
-    if (error) {
-      throw new Error("Failed to load chat messages");
-    }
-
-    const map: Record<string, MessageNode> = data.map(item => ({
-      id: item.id,
-      role: item.role,
-      content: item.content,
-      root: item.root,
-      parent: item.parent || undefined,
-      child: item.child || undefined,
-      metadata: item.metadata || undefined,
-    })).reduce(
-      (acc, node) => {
-        acc[node.id] = node;
-        return acc;
-      },
-      {} as Record<string, MessageNode>
-    );
-
-    const validMap = validateMappings(map);
-
-    setMappings(prev => ({ ...prev, ...validMap }));
-  };
-
-  useEffect(() => {
-    if (authenticated && !anonymous) {
-      loadSupabaseMappings().catch((error) => {
-        console.error("Error loading messages:", error);
-      });
-    }
-  }, [authenticated, anonymous]);
+  const hydrated = useRef(false);
+  const pausedRef = useRef(paused);
+  pausedRef.current = paused;
+  // Signature of the id-set we last persisted, used to tell a structural change
+  // (node added/removed) from a content-only change (tokens streaming into an
+  // existing node).
+  const savedIds = useRef<string>("");
 
   const saveLocalMappings = async () => {
     try {
@@ -114,11 +22,20 @@ function useMappings(): [Record<string, MessageNode<string, Record<string, any>>
   };
 
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      saveLocalMappings();
-    }, 500);
+    if (!hydrated.current) return;
 
-    return () => clearTimeout(timeout);
+    const ids = Object.keys(mappings).sort().join("|");
+    const structuralChange = ids !== savedIds.current;
+
+    // While a response is streaming, skip per-token content writes. Structural
+    // changes (new prompt, deletions) always persist immediately; the final
+    // commit after streaming ends persists the complete message. A response
+    // killed mid-stream is intentionally not saved, but the prompt that started
+    // it is (it was a structural change).
+    if (pausedRef.current && !structuralChange) return;
+
+    savedIds.current = ids;
+    saveLocalMappings();
   }, [mappings]);
 
   const loadLocalMappings = async () => {
@@ -129,6 +46,8 @@ function useMappings(): [Record<string, MessageNode<string, Record<string, any>>
       }
     } catch (error) {
       console.error("Error loading mappings:", error);
+    } finally {
+      hydrated.current = true;
     }
   };
 

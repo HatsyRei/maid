@@ -25,75 +25,6 @@ describe("Chat page", () => {
     expect(sendButton.type).toBe("View");
   });
 
-  it("should navigate to the model download page when the download model button is pressed", async () => {
-    const modelButton = await screen.findByTestId("model-button");
-    fireEvent.press(modelButton);
-
-    const modelPopover = await screen.findByTestId("model-popover");
-    expect(modelPopover).toBeOnTheScreen();
-
-    const loadModelButton = await screen.findByTestId("load-model-button");
-    expect(loadModelButton).toBeOnTheScreen();
-    
-    const downloadModelButton = await screen.findByTestId("download-model-button");
-    fireEvent.press(downloadModelButton);
-    
-    const downloadPage = await screen.findByTestId("download-page");
-    expect(downloadPage).toBeOnTheScreen();
-
-    const backButton = await screen.findByTestId("back-button");
-    fireEvent.press(backButton);
-
-    expect(downloadPage).not.toBeOnTheScreen();
-
-    const chatPage = await screen.findByTestId("chat-page");
-    expect(chatPage).toBeOnTheScreen();
-  });
-
-  it("should navigate to login when the login button is pressed", async () => {
-    const openDrawerButton = await screen.findByTestId("open-drawer-button");
-    fireEvent.press(openDrawerButton);
-    
-    const drawer = await screen.findByTestId("drawer-content");
-    expect(drawer).toBeOnTheScreen();
-    
-    const loginButton = await screen.findByTestId("login-button");
-    fireEvent.press(loginButton);
-    
-    const loginPage = await screen.findByTestId("login-page");
-    expect(loginPage).toBeOnTheScreen();
-
-    const backButton = await screen.findByTestId("back-button");
-    fireEvent.press(backButton);
-
-    expect(loginPage).not.toBeOnTheScreen();
-
-    const chatPage = await screen.findByTestId("chat-page");
-    expect(chatPage).toBeOnTheScreen();
-  });
-
-  it("should navigate to register when the register button is pressed", async () => {
-    const openDrawerButton = await screen.findByTestId("open-drawer-button");
-    fireEvent.press(openDrawerButton);
-    
-    const drawer = await screen.findByTestId("drawer-content");
-    expect(drawer).toBeOnTheScreen();
-    
-    const registerButton = await screen.findByTestId("register-button");
-    fireEvent.press(registerButton);
-    
-    const registerPage = await screen.findByTestId("register-page");
-    expect(registerPage).toBeOnTheScreen();
-
-    const backButton = await screen.findByTestId("back-button");
-    fireEvent.press(backButton);
-
-    expect(registerPage).not.toBeOnTheScreen();
-
-    const chatPage = await screen.findByTestId("chat-page");
-    expect(chatPage).toBeOnTheScreen();
-  });
-
   it("should show the clear prompt button when text is entered", async () => {
     const input = await screen.findByTestId("prompt-input");
     fireEvent.changeText(input, "Hello");
@@ -121,22 +52,6 @@ describe("Chat page", () => {
 
     const chatButton = await screen.findByTestId("chat-button-0");
     expect(chatButton).toBeOnTheScreen();
-  });
-
-  it("should clear all chats when the clear chats button is pressed", async () => {
-    const openDrawerButton = await screen.findByTestId("open-drawer-button");
-    fireEvent.press(openDrawerButton);
-
-    const newChatButton = await screen.findByTestId("new-chat-button");
-    fireEvent.press(newChatButton);
-
-    const chatButton = await screen.findByTestId("chat-button-0");
-    expect(chatButton).toBeOnTheScreen();
-
-    const clearChatsButton = await screen.findByTestId("clear-chats-button");
-    fireEvent.press(clearChatsButton);
-
-    expect(chatButton).not.toBeOnTheScreen();
   });
 
   it("should open the menu popover when the menu button is pressed", async () => {

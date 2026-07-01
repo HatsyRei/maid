@@ -205,25 +205,6 @@ jobs:
           echo "keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}" >> android/key.properties
           echo "releaseAlias=${{ secrets.ANDROID_KEY_ALIAS }}" >> android/key.properties
 
-      - name: Enable rnllama build from source
-        run: |
-          FILE="./android/gradle.properties"
-          LINE="rnllamaBuildFromSource=true"
-
-          echo "🔧 Updating $FILE"
-
-          # Ensure file exists
-          touch "$FILE"
-
-          # Add only if it doesn't already exist
-          if ! grep -qxF "$LINE" "$FILE"; then
-            echo "" >> "$FILE"
-            echo "$LINE" >> "$FILE"
-            echo "Added rnllamaBuildFromSource=true"
-          else
-            echo "Property already present"
-          fi
-
       - name: Install JS deps
         run: yarn install --frozen-lockfile
 

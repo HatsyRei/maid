@@ -3,7 +3,7 @@ import { useChat, useSystem } from "@/context";
 import * as FileSystem from "expo-file-system";
 import { deleteNode, getRootMapping, MessageNode, updateContent } from "message-nodes";
 import { useEffect, useRef, useState } from "react";
-import { LayoutRectangle, StyleSheet, Text, TextInput, TouchableOpacity } from "react-native";
+import { Alert, LayoutRectangle, StyleSheet, Text, TextInput, TouchableOpacity } from "react-native";
 
 function ChatButton({ node, testID }: { node: MessageNode<string>, testID?: string }) {
   const { root, setRoot, mappings, setMappings } = useChat();
@@ -60,6 +60,18 @@ function ChatButton({ node, testID }: { node: MessageNode<string>, testID?: stri
       setRoot(undefined);
     }
     setMappings((prev) => deleteNode(prev, node.id));
+  }
+
+  const confirmDeleteChat = () => {
+    setVisible(false);
+    Alert.alert(
+      "Delete conversation",
+      `Are you sure you want to delete "${node.metadata?.title || "New Chat"}"? This action cannot be undone.`,
+      [
+        { text: "Cancel", style: "cancel" },
+        { text: "Delete", style: "destructive", onPress: deleteChat },
+      ]
+    );
   }
 
   const styles = StyleSheet.create({
@@ -144,7 +156,7 @@ function ChatButton({ node, testID }: { node: MessageNode<string>, testID?: stri
         </TouchableOpacity>
         <TouchableOpacity
           testID={`${testID}-delete`}
-          onPress={deleteChat}
+          onPress={confirmDeleteChat}
         >
           <Text style={styles.popoverButton}>Delete</Text>
         </TouchableOpacity>

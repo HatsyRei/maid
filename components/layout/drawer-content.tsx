@@ -1,20 +1,17 @@
 import ChatButton from "@/components/buttons/chat-button";
 import { MaterialIconButton } from "@/components/buttons/icon-button";
 import { useChat, useSystem } from "@/context";
-import useAuthentication from "@/hooks/use-authentication";
+import getMetadata from "@/utilities/metadata";
 import { validateMappings } from "@/utilities/mappings";
 import { randomUUID } from "expo-crypto";
 import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
-import { useRouter } from "expo-router";
-import { addNode, getRoots } from "message-nodes";
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { addNode, getRootMapping, getRoots } from "message-nodes";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 
 function DrawerContent({ navigation }: { navigation?: { closeDrawer: () => void } }) {
-  const router = useRouter();
-  const [authenticated, anonymous] = useAuthentication();
   const { mappings, setMappings, setRoot } = useChat();
-  const { colorScheme } = useSystem();
+  const { colorScheme, systemPrompt } = useSystem();
   
   const loadMappings = async () => {
     try {
@@ -40,25 +37,45 @@ function DrawerContent({ navigation }: { navigation?: { closeDrawer: () => void 
     }
   };
 
-  const clearChats = () => {
-    setRoot(undefined);
-    setMappings({});
+  const backupAllChats = async () => {
+    const roots = getRoots<string>(mappings);
+    if (roots.length === 0) return;
+
+    const perms = await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
+    if (!perms.granted) return;
+
+    for (const root of roots) {
+      try {
+        const rootMapping = getRootMapping<string>(mappings, root.id);
+        const filename = `${root.metadata?.title || "New Chat"}.json`;
+        const json = JSON.stringify(rootMapping, null, 2);
+
+        const fileUri = await FileSystem.StorageAccessFramework.createFileAsync(
+          perms.directoryUri,
+          filename,
+          "application/json"
+        );
+
+        await FileSystem.writeAsStringAsync(fileUri, json, {
+          encoding: FileSystem.EncodingType.UTF8,
+        });
+      } catch (error) {
+        console.warn(`Failed to back up chat: ${root.metadata?.title}`, error);
+      }
+    }
   };
 
   const createChat = () => {
     const id = randomUUID();
-    const time = new Date();
     setMappings((prev) => addNode<string>(
       prev,
       id,
       "system",
-      "New Chat",
+      systemPrompt || "You are a helpful assistant.",
       id,
       undefined,
       undefined,
-      {
-        createTime: time.toISOString(),
-      }
+      { title: "New Chat", ...getMetadata() }
     ));
     setRoot(id);
   };
@@ -97,16 +114,6 @@ function DrawerContent({ navigation }: { navigation?: { closeDrawer: () => void 
       flex: 1,
       flexDirection: "column"
     },
-    account: {
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "space-around",
-      paddingTop: 12,
-      paddingBottom: 24,
-    },
-    accountText: {
-      color: colorScheme.primary,
-    }
   });
     
   return (
@@ -122,11 +129,11 @@ function DrawerContent({ navigation }: { navigation?: { closeDrawer: () => void 
             onPress={loadMappings}
           />
           <MaterialIconButton
-            testID="clear-chats-button"
-            icon="delete"
+            testID="backup-chats-button"
+            icon="save-alt"
             style={styles.button}
             size={24}
-            onPress={clearChats}
+            onPress={backupAllChats}
           />
           <MaterialIconButton
             testID="new-chat-button"
@@ -141,29 +148,6 @@ function DrawerContent({ navigation }: { navigation?: { closeDrawer: () => void 
       <ScrollView style={styles.sessions}>
         {getRoots<string>(mappings).map((root, index) => <ChatButton testID={`chat-button-${index}`} key={root.id} node={root} />)}
       </ScrollView>
-      <View style={styles.divider} />
-      <View style={styles.account}>
-        {authenticated && !anonymous ? (
-          <TouchableOpacity testID="account-button" onPress={() => { navigation?.closeDrawer(); router.push("/account"); }}>
-            <Text style={styles.accountText}>Account</Text>
-          </TouchableOpacity>
-        ) : (
-          <>
-            <TouchableOpacity
-              testID="login-button"
-              onPress={() => { navigation?.closeDrawer(); router.push("/account/login"); }}
-            >
-                <Text style={styles.accountText}>Login</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              testID="register-button"
-              onPress={() => { navigation?.closeDrawer(); router.push("/account/register"); }}
-            >
-              <Text style={styles.accountText}>Register</Text>
-            </TouchableOpacity>
-          </>
-        )}
-      </View>
     </View>
   );
 }

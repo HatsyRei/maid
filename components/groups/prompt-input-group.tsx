@@ -1,17 +1,13 @@
 import { useSystem } from "@/context";
-import { ImagePickerAsset } from "expo-image-picker";
 import { useMemo, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import PromptButton from "../buttons/prompt-button";
-import PromptImageButton from "../buttons/prompt-image-button";
 import PromptInputField from "../fields/prompt-input-field";
-import PromptImagesView from "../views/prompt-images-view";
 
 function PromptInputGroup() {
   const { colorScheme } = useSystem();
 
   const [promptText, setPromptText] = useState<string>("");
-  const [images, setImages] = useState<Array<ImagePickerAsset>>([]);
 
   const styles = useMemo(
     () =>
@@ -55,16 +51,7 @@ function PromptInputGroup() {
           </Text>
         </TouchableOpacity>
       )}
-      {images.length > 0 && (
-        <PromptImagesView 
-          images={images} 
-          setImages={setImages} 
-        />
-      )}
       <View style={styles.inputView}>
-        <PromptImageButton 
-          setImages={setImages} 
-        />
         <PromptInputField 
           promptText={promptText} 
           setPromptText={setPromptText} 
@@ -72,8 +59,6 @@ function PromptInputGroup() {
         <PromptButton 
           promptText={promptText} 
           setPromptText={setPromptText} 
-          images={images} 
-          setImages={setImages} 
         />
       </View>
     </View>

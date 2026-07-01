@@ -1,66 +1,34 @@
-import { MaterialCommunityIconButton } from "@/components/buttons/icon-button";
+import { MaterialIconButton } from "@/components/buttons/icon-button";
 import { useChat, useLLM, useSystem } from "@/context";
 import getMetadata from "@/utilities/metadata";
 import splitReasoning from "@/utilities/reasoning";
-import getSupabase from "@/utilities/supabase";
+import { createStreamWriter } from "@/utilities/stream-writer";
 import Markdown from '@novastera-oss/react-native-markdown-display';
 import { randomUUID } from "expo-crypto";
+import { Image, type ImageLoadEventData } from "expo-image";
 import { addNode, branchNode, getConversation, MessageNode, updateContent } from "message-nodes";
-import { useState } from "react";
-import { Alert, Image, StyleSheet, Text, TextInput, TouchableHighlight, View } from "react-native";
-import NeuralNetworkAnimation from "../neural-network-animation";
+import { memo, useEffect, useMemo, useState } from "react";
+import { Alert, StyleSheet, Text, TextInput, TouchableHighlight, View } from "react-native";
 
-export async function insertReport(
-  content: string,
-  provider: string,
-  model: string,
-  upvoted: boolean = false
-): Promise<void> {
-  try {
-    // 1) Ensure we have a signed-in user (anonymous if needed)
-    const { data: sessionRes, error: sessionErr } = await getSupabase().auth.getSession();
-    if (sessionErr) console.warn("getSession error:", sessionErr);
+// The markdown library's default image style is `{ flex: 1 }` with no height,
+// so a bare ![](url) collapses to zero height and never appears. Render images
+// through a bounded, auto-sizing expo-image so they stay visible.
+function MarkdownImage({ uri }: { uri: string }) {
+  const [aspectRatio, setAspectRatio] = useState<number | undefined>(undefined);
 
-    let userId = sessionRes?.session?.user?.id;
+  const onLoad = (event: ImageLoadEventData) => {
+    const { width, height } = event.source;
+    if (width && height) setAspectRatio(width / height);
+  };
 
-    if (!userId) {
-      const authAny = getSupabase().auth as any;
-
-      if (typeof authAny.signInAnonymously !== "function") {
-        console.error("signInAnonymously() not available. Update getSupabase-js and enable anonymous sign-ins in Supabase.");
-        Alert.alert("Couldn’t submit report", "Sign-in isn’t available right now.");
-        return;
-      }
-
-      const { data: anonRes, error: anonErr } = await authAny.signInAnonymously();
-      if (anonErr || !anonRes?.user?.id) {
-        console.error("Anonymous sign-in failed:", anonErr);
-        Alert.alert("Couldn’t submit report", "Sign-in failed. Please try again.");
-        return;
-      }
-    }
-
-    // 2) Insert report
-    const { error } = await getSupabase().from("reports").insert({
-      content,
-      provider,
-      model,
-      upvoted
-    });
-
-    if (error) {
-      console.error("Error inserting report:", error);
-      Alert.alert("Couldn’t submit report", error.message);
-      return;
-    }
-
-    Alert.alert("Report Submitted", "Thank you for your feedback!", [{ text: "OK" }], {
-      cancelable: true,
-    });
-  } catch (e) {
-    console.error("insertReport unexpected error:", e);
-    Alert.alert("Couldn’t submit report", "Unexpected error. Please try again.");
-  }
+  return (
+    <Image
+      source={{ uri }}
+      style={{ width: "100%", aspectRatio: aspectRatio ?? 16 / 9 }}
+      contentFit="contain"
+      onLoad={onLoad}
+    />
+  );
 }
 
 function MessageContentView({ message }: { message: MessageNode }) {
@@ -70,7 +38,17 @@ function MessageContentView({ message }: { message: MessageNode }) {
   const { colorScheme } = useSystem();
   const LLM = useLLM();
 
-  const styles = StyleSheet.create({
+  // Keep the edit buffer in sync with the message content whenever this message
+  // enters edit mode. The initial useState value is captured at mount, when an
+  // assistant message is still empty (mid-stream), so without this the edit
+  // field would show stale/empty text right after a response finishes.
+  useEffect(() => {
+    if (editing === message.id) {
+      setEditText(message.content);
+    }
+  }, [editing, message.id, message.content]);
+
+  const styles = useMemo(() => StyleSheet.create({
     view: {
       flexDirection: "column",
       alignItems: "flex-start",
@@ -102,9 +80,9 @@ function MessageContentView({ message }: { message: MessageNode }) {
       fontSize: 14,
       paddingHorizontal: 0,
     },
-  });
+  }), [colorScheme]);
 
-  const markdownStyle = StyleSheet.create({
+  const markdownStyle = useMemo(() => StyleSheet.create({
     body: {
       color: colorScheme.onSurface,
       fontSize: 14,
@@ -145,11 +123,17 @@ function MessageContentView({ message }: { message: MessageNode }) {
       backgroundColor: colorScheme.outline,
       marginVertical: 16,
     }
-  });
+  }), [colorScheme]);
 
   const onEdit = () => {
     if (!message.root) {
       Alert.alert("Error", "Cannot edit this message because its conversation root is missing.");
+      return;
+    }
+
+    if (message.role === "assistant") {
+      setMappings(updateContent(mappings, message.id, editText));
+      setEditing(undefined);
       return;
     }
 
@@ -175,23 +159,15 @@ function MessageContentView({ message }: { message: MessageNode }) {
         ...getMetadata(),
         ...LLM.parameters,
         provider: LLM.type.toLowerCase().replace(" ", "-"),
-        model: LLM.model || LLM.modelKey,
+        model: LLM.model,
       }
     );
 
     setMappings(next);
 
-    const chunks: string[] = [];
-    const updateMeta = (meta: any) => ({ ...meta, updateTime: new Date().toISOString() });
     try {
-      LLM.prompt(
-        getConversation(next, message.root),
-        (chunk: string) => {
-          chunks.push(chunk);
-          const buffer = chunks.join("");
-          setMappings(updateContent(next, responseId, buffer, updateMeta));
-        }
-      );
+      const writer = createStreamWriter(setMappings, responseId);
+      LLM.prompt(getConversation(next, message.root), writer.push).finally(writer.flush);
     } catch (error) {
       Alert.alert(
         "Edit failed",
@@ -209,6 +185,14 @@ function MessageContentView({ message }: { message: MessageNode }) {
 
   const [content, reasoning] = splitReasoning(message);
 
+  const markdownRules = useMemo(() => ({
+    image: (node: { key: string; attributes: { src?: string } }) => {
+      const src = node.attributes?.src;
+      if (!src) return null;
+      return <MarkdownImage key={node.key} uri={String(src)} />;
+    },
+  }), []);
+
   if (editing === message.id) {
     return (
       <View style={styles.view}>
@@ -221,11 +205,11 @@ function MessageContentView({ message }: { message: MessageNode }) {
         <View
           style={styles.controls}
         >
-          <MaterialCommunityIconButton
+          <MaterialIconButton
             icon="check"
             onPress={onEdit}
           />
-          <MaterialCommunityIconButton
+          <MaterialIconButton
             icon="close"
             onPress={onEditDone}
           />
@@ -234,45 +218,18 @@ function MessageContentView({ message }: { message: MessageNode }) {
     );
   }
 
-  const images: string[] = message.metadata?.images ?? [];
-
   return (
     <View style={styles.view}>
-      {images.map((b64, i) => (
-        <Image
-          key={i}
-          source={{ uri: b64 }}
-          style={{ width: "80%", alignSelf: "center", borderRadius: 8, aspectRatio: 1, resizeMode: "cover", marginVertical: 16 }}
-        />
-      ))}
       {reasoning && (
         <TouchableHighlight style={styles.showReasoningButton} onPress={() => setShowReasoning(!showReasoning)}>
           <Text style={styles.showReasoningButtonText}>{showReasoning ? "Hide Reasoning" : "Show Reasoning"}</Text>
         </TouchableHighlight>
       )}
       {reasoning && showReasoning && <Text style={styles.reasoning}>{reasoning}</Text>}
-      {content && <Markdown style={markdownStyle}>{content}</Markdown>}
-      {message.role === "assistant" && message.content.length > 0 && (
-        <View
-          style={styles.controls}
-        >
-          <MaterialCommunityIconButton
-            icon="thumb-up"
-            size={22}
-            onPress={() => insertReport(message.content, LLM.type, LLM.model || LLM.modelKey || "", true)}
-            color={colorScheme.secondary}
-          />
-          <MaterialCommunityIconButton
-            icon="thumb-down"
-            size={22}
-            onPress={() => insertReport(message.content, LLM.type, LLM.model || LLM.modelKey || "", false)}
-            color={colorScheme.secondary}
-          />
-        </View>
-      )}
+      {content && <Markdown style={markdownStyle} rules={markdownRules}>{content}</Markdown>}
       {message.content.length === 0 && !message.child && (
-        LLM.busy ? 
-          <NeuralNetworkAnimation repeat={true} /> : 
+        LLM.busy ?
+          <Text style={styles.reasoning}>...</Text> :
           <Text style={styles.reasoning}>[No content]</Text>
         )
       }
@@ -280,4 +237,4 @@ function MessageContentView({ message }: { message: MessageNode }) {
   );
 };
 
-export default MessageContentView;
+export default memo(MessageContentView);

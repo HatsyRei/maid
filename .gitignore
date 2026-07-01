@@ -37,13 +37,3 @@ yarn-error.*
 *.tsbuildinfo
 
 app-example
-
-*.pdf
-*.synctex.gz
-*.log
-*.out
-*.aux
-*.fls
-*.fdb_latexmk
-*.toc
-docs/%OUTDIR%

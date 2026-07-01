@@ -8,6 +8,16 @@ import { OpenAIContextProps } from "./types";
 
 const DEFAULT_BASE_URL = "https://api.openai.com/v1";
 
+function isOfficialOpenAIEndpoint(baseURL: string): boolean {
+  try {
+    const normalized = baseURL.replace(/\/+$/, "");
+    const official = DEFAULT_BASE_URL.replace(/\/+$/, "");
+    return normalized === official;
+  } catch {
+    return false;
+  }
+}
+
 const OpenAIContext = createContext<OpenAIContextProps | undefined>(undefined);
 
 export function OpenAIProvider({ children }: { children: React.ReactNode }) {
@@ -25,21 +35,25 @@ export function OpenAIProvider({ children }: { children: React.ReactNode }) {
   const [models, setModels] = useState<Array<string>>([]);
 
   useEffect(() => {
-    if (!apiKey) {
+    const resolvedBaseURL = baseURL ?? DEFAULT_BASE_URL;
+    const requiresApiKey = isOfficialOpenAIEndpoint(resolvedBaseURL);
+
+    if (requiresApiKey && !apiKey) {
       console.warn("OpenAI API key not set");
       return;
     }
 
     try {
-      new URL(baseURL ?? "");
+      new URL(resolvedBaseURL);
     } catch {
       return;
     }
 
     try {
       const openaiInstance = new OpenAI({
-        apiKey,
-        baseURL,
+        // OpenAI SDK expects a key. For local compatible endpoints, allow a placeholder.
+        apiKey: apiKey ?? "local-openai-compatible",
+        baseURL: resolvedBaseURL,
         defaultHeaders: headers,
         fetch: expoFetch as typeof fetch,
       });
@@ -80,9 +94,24 @@ export function OpenAIProvider({ children }: { children: React.ReactNode }) {
 
     setBusy(true);
 
+    // The conversation includes an empty assistant placeholder node that
+    // receives the streamed response. Sending it to the server (as
+    // {"role":"assistant","content":""}) makes OpenAI-compatible backends like
+    // llama.cpp treat it as an assistant prefix to continue, corrupting the
+    // chat template and producing gibberish. Drop trailing empty assistant
+    // messages before sending.
+    const requestMessages = messages.slice();
+    while (
+      requestMessages.length > 0 &&
+      requestMessages[requestMessages.length - 1].role === "assistant" &&
+      requestMessages[requestMessages.length - 1].content.trim() === ""
+    ) {
+      requestMessages.pop();
+    }
+
     const stream = await openai.chat.completions.create({
       model,
-      messages: messages.map((msg) => ({
+      messages: requestMessages.map((msg) => ({
         role: msg.role as "system" | "user" | "assistant",
         content: msg.content,
       })),
@@ -119,7 +148,6 @@ export function OpenAIProvider({ children }: { children: React.ReactNode }) {
   const value = {
     ready: !!openai && !!model,
     busy,
-    imagesSupported: false,
     baseURL,
     setBaseURL,
     resetBaseURL,

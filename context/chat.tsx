@@ -1,8 +1,8 @@
 import useMappings from "@/hooks/use-mappings";
 import useStoredString from "@/hooks/use-stored-string";
-import getSupabase from "@/utilities/supabase";
 import { deleteNode, MessageNode } from "message-nodes";
-import { createContext, Dispatch, ReactNode, SetStateAction, useContext, useState } from "react";
+import { createContext, Dispatch, ReactNode, SetStateAction, useCallback, useContext, useMemo, useState } from "react";
+import { useLLM } from "./language-model";
 
 interface ChatContextProps {
   editing: string | undefined;
@@ -17,24 +17,16 @@ interface ChatContextProps {
 const ChatContext = createContext<ChatContextProps | undefined>(undefined);
 
 export function ChatContextProvider({ children }: { children: ReactNode }) {
+  const { busy } = useLLM();
   const [root, setRoot] = useStoredString("root-message-id");
   const [editing, setEditing] = useState<string | undefined>(undefined);
-  const [mappings, setMappings] = useMappings();
+  const [mappings, setMappings] = useMappings(busy);
 
-  const deleteMessage = async (id: string) => {
+  const deleteMessage = useCallback((id: string) => {
     setMappings((prev) => deleteNode(prev, id));
-    
-    const { error } = await getSupabase()
-      .from("messages")
-      .delete()
-      .eq("id", id);
+  }, [setMappings]);
 
-    if (error) {
-      console.error("Error deleting message:", error);
-    }
-  };
-
-  const value = {
+  const value = useMemo(() => ({
     editing,
     setEditing,
     root,
@@ -42,7 +34,7 @@ export function ChatContextProvider({ children }: { children: ReactNode }) {
     mappings,
     setMappings,
     deleteMessage,
-  };
+  }), [editing, setEditing, root, setRoot, mappings, setMappings, deleteMessage]);
 
   return (
     <ChatContext.Provider value={value}>

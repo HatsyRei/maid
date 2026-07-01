@@ -3,6 +3,26 @@ import { MessageNode } from 'message-nodes';
 
 let db: SQLite.SQLiteDatabase | null = null;
 
+// Signature of each row as it was last persisted (id -> signature). Lets us
+// write only the nodes that actually changed instead of rewriting the whole
+// table on every save.
+const lastSaved = new Map<string, string>();
+
+// Serializes saves so overlapping async writes cannot interleave transactions
+// or corrupt the signature cache.
+let writeChain: Promise<void> = Promise.resolve();
+
+function rowSignature(node: MessageNode<string, Record<string, any>>, metadataJson: string): string {
+  return JSON.stringify([
+    node.role,
+    node.content,
+    node.root,
+    node.parent ?? null,
+    node.child ?? null,
+    metadataJson,
+  ]);
+}
+
 async function getDb(): Promise<SQLite.SQLiteDatabase> {
   if (!db) {
     db = await SQLite.openDatabaseAsync('messages.db');
@@ -17,54 +37,67 @@ async function getDb(): Promise<SQLite.SQLiteDatabase> {
         child TEXT,
         metadata TEXT
       );
-      CREATE TABLE IF NOT EXISTS message_images (
-        message_id TEXT NOT NULL,
-        idx INTEGER NOT NULL,
-        data TEXT NOT NULL,
-        PRIMARY KEY (message_id, idx)
-      );
     `);
   }
   return db;
 }
 
-export async function saveLocalMessages(mappings: Record<string, MessageNode<string, Record<string, any>>>): Promise<void> {
+export function saveLocalMessages(mappings: Record<string, MessageNode<string, Record<string, any>>>): Promise<void> {
+  const run = writeChain.then(() => persistLocalMessages(mappings));
+  // Keep the chain alive even if a save rejects, so later writes still run.
+  writeChain = run.catch(() => {});
+  return run;
+}
+
+async function persistLocalMessages(mappings: Record<string, MessageNode<string, Record<string, any>>>): Promise<void> {
   const database = await getDb();
   const nodes = Object.values(mappings);
 
+  // Diff the current state against what we last wrote.
+  const currentIds = new Set<string>();
+  const upserts: Array<{ node: MessageNode<string, Record<string, any>>; metadataJson: string; signature: string }> = [];
+
+  for (const node of nodes) {
+    currentIds.add(node.id);
+    const metadataJson = JSON.stringify(node.metadata ?? {});
+    const signature = rowSignature(node, metadataJson);
+    if (lastSaved.get(node.id) !== signature) {
+      upserts.push({ node, metadataJson, signature });
+    }
+  }
+
+  const deletes: string[] = [];
+  for (const id of lastSaved.keys()) {
+    if (!currentIds.has(id)) {
+      deletes.push(id);
+    }
+  }
+
+  if (upserts.length === 0 && deletes.length === 0) {
+    return;
+  }
+
   await database.withTransactionAsync(async () => {
-    // Remove nodes that no longer exist
-    const ids = nodes.map(n => `'${n.id.replace(/'/g, "''")}'`).join(',');
-    if (ids.length > 0) {
-      await database.execAsync(`DELETE FROM messages WHERE id NOT IN (${ids})`);
-      await database.execAsync(`DELETE FROM message_images WHERE message_id NOT IN (${ids})`);
-    } else {
-      await database.execAsync('DELETE FROM messages');
-      await database.execAsync('DELETE FROM message_images');
+    for (const id of deletes) {
+      await database.runAsync('DELETE FROM messages WHERE id = ?', [id]);
     }
 
-    for (const node of nodes) {
-      const { images, ...metaWithoutImages } = node.metadata ?? {};
-      const metadataJson = JSON.stringify(metaWithoutImages);
-
+    for (const { node, metadataJson } of upserts) {
       await database.runAsync(
         `INSERT OR REPLACE INTO messages (id, role, content, root, parent, child, metadata)
          VALUES (?, ?, ?, ?, ?, ?, ?)`,
         [node.id, node.role, node.content, node.root, node.parent ?? null, node.child ?? null, metadataJson]
       );
-
-      // Delete old images for this node then re-insert
-      await database.runAsync('DELETE FROM message_images WHERE message_id = ?', [node.id]);
-      if (Array.isArray(images)) {
-        for (let i = 0; i < images.length; i++) {
-          await database.runAsync(
-            'INSERT INTO message_images (message_id, idx, data) VALUES (?, ?, ?)',
-            [node.id, i, images[i]]
-          );
-        }
-      }
     }
   });
+
+  // Only update the cache once the transaction has committed successfully.
+  for (const id of deletes) {
+    lastSaved.delete(id);
+  }
+  for (const { node, signature } of upserts) {
+    lastSaved.set(node.id, signature);
+  }
 }
 
 export async function loadLocalMessages(): Promise<Record<string, MessageNode<string, Record<string, any>>>> {
@@ -80,28 +113,11 @@ export async function loadLocalMessages(): Promise<Record<string, MessageNode<st
     metadata: string | null;
   }>('SELECT * FROM messages');
 
-  const imageRows = await database.getAllAsync<{
-    message_id: string;
-    idx: number;
-    data: string;
-  }>('SELECT message_id, idx, data FROM message_images ORDER BY message_id, idx');
-
-  // Group images by message_id
-  const imagesByMessage: Record<string, string[]> = {};
-  for (const row of imageRows) {
-    if (!imagesByMessage[row.message_id]) {
-      imagesByMessage[row.message_id] = [];
-    }
-    imagesByMessage[row.message_id][row.idx] = row.data;
-  }
-
   const mappings: Record<string, MessageNode<string, Record<string, any>>> = {};
+  lastSaved.clear();
   for (const row of rows) {
     const metadata = row.metadata ? JSON.parse(row.metadata) : {};
-    if (imagesByMessage[row.id]?.length > 0) {
-      metadata.images = imagesByMessage[row.id];
-    }
-    mappings[row.id] = {
+    const node: MessageNode<string, Record<string, any>> = {
       id: row.id,
       role: row.role,
       content: row.content,
@@ -110,6 +126,9 @@ export async function loadLocalMessages(): Promise<Record<string, MessageNode<st
       child: row.child ?? undefined,
       metadata,
     };
+    mappings[row.id] = node;
+    // Seed the cache so the next save only writes what actually changed.
+    lastSaved.set(row.id, rowSignature(node, JSON.stringify(metadata)));
   }
 
   return mappings;
