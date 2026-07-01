@@ -1,6 +1,7 @@
 import ChatButton from "@/components/buttons/chat-button";
 import { MaterialIconButton } from "@/components/buttons/icon-button";
 import { useChat, useSystem } from "@/context";
+import getMetadata from "@/utilities/metadata";
 import { validateMappings } from "@/utilities/mappings";
 import { randomUUID } from "expo-crypto";
 import * as DocumentPicker from "expo-document-picker";
@@ -10,7 +11,7 @@ import { ScrollView, StyleSheet, Text, View } from "react-native";
 
 function DrawerContent({ navigation }: { navigation?: { closeDrawer: () => void } }) {
   const { mappings, setMappings, setRoot } = useChat();
-  const { colorScheme } = useSystem();
+  const { colorScheme, systemPrompt } = useSystem();
   
   const loadMappings = async () => {
     try {
@@ -66,18 +67,15 @@ function DrawerContent({ navigation }: { navigation?: { closeDrawer: () => void 
 
   const createChat = () => {
     const id = randomUUID();
-    const time = new Date();
     setMappings((prev) => addNode<string>(
       prev,
       id,
       "system",
-      "New Chat",
+      systemPrompt || "You are a helpful assistant.",
       id,
       undefined,
       undefined,
-      {
-        createTime: time.toISOString(),
-      }
+      { title: "New Chat", ...getMetadata() }
     ));
     setRoot(id);
   };
