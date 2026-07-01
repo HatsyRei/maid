@@ -94,9 +94,24 @@ export function OpenAIProvider({ children }: { children: React.ReactNode }) {
 
     setBusy(true);
 
+    // The conversation includes an empty assistant placeholder node that
+    // receives the streamed response. Sending it to the server (as
+    // {"role":"assistant","content":""}) makes OpenAI-compatible backends like
+    // llama.cpp treat it as an assistant prefix to continue, corrupting the
+    // chat template and producing gibberish. Drop trailing empty assistant
+    // messages before sending.
+    const requestMessages = messages.slice();
+    while (
+      requestMessages.length > 0 &&
+      requestMessages[requestMessages.length - 1].role === "assistant" &&
+      requestMessages[requestMessages.length - 1].content.trim() === ""
+    ) {
+      requestMessages.pop();
+    }
+
     const stream = await openai.chat.completions.create({
       model,
-      messages: messages.map((msg) => ({
+      messages: requestMessages.map((msg) => ({
         role: msg.role as "system" | "user" | "assistant",
         content: msg.content,
       })),
