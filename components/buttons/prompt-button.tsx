@@ -74,7 +74,7 @@ function PromptButton({ promptText, setPromptText }: PromptButtonProps) {
       <MaterialIconButton
         testID="stop-button"
         icon="stop-circle"
-        size={28}
+        size={26}
         color={colorScheme.onError}
         onPress={LLM.stop}
       />
@@ -85,7 +85,7 @@ function PromptButton({ promptText, setPromptText }: PromptButtonProps) {
     <MaterialIconButton
       testID="send-button"
       icon="send"
-      size={28}
+      size={26}
       color={colorScheme.primary}
       onPress={prompt}
       disabled={!LLM.ready || promptText.trim().length === 0}

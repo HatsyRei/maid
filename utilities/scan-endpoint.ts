@@ -1,7 +1,4 @@
-import { useLLM, useSystem } from "@/context";
 import * as Network from "expo-network";
-import { useRef, useState } from "react";
-import { StyleSheet, Text, TouchableOpacity } from "react-native";
 
 const DEFAULT_PORT = 8080;
 const REQUEST_TIMEOUT_MS = 400;
@@ -86,64 +83,19 @@ async function scanTargets(targets: Array<string>): Promise<string | undefined> 
   return undefined;
 }
 
-function FindOpenAIButton() {
-  const { type, setBaseURL } = useLLM();
-  const { colorScheme } = useSystem();
-  const [scanning, setScanning] = useState(false);
-  const scanningRef = useRef(false);
+export async function scanForEndpoint(): Promise<string | undefined> {
+  const ip = await Network.getIpAddressAsync();
+  if (!ip) throw new Error("Could not determine local IP");
 
-  if (type !== "Open AI" || !setBaseURL) return null;
+  let foundBaseUrl = await scanTargets(buildSubnetTargets(ip, 24));
 
-  const styles = StyleSheet.create({
-    button: {
-      color: colorScheme.primary,
-      backgroundColor: colorScheme.surfaceVariant,
-      paddingVertical: 8,
-      paddingHorizontal: 16,
-      borderRadius: 20,
-      opacity: scanning ? 0.5 : 1,
-    }
-  });
+  if (!foundBaseUrl) {
+    const subnet21Targets = buildSubnetTargets(ip, 21);
+    const subnet24Targets = new Set(buildSubnetTargets(ip, 24));
+    const extendedTargets = subnet21Targets.filter((target) => !subnet24Targets.has(target));
 
-  const onPress = async () => {
-    if (scanningRef.current) return;
-    scanningRef.current = true;
-    setScanning(true);
-    try {
-      const ip = await Network.getIpAddressAsync();
-      if (!ip) throw new Error("Could not determine local IP");
+    foundBaseUrl = await scanTargets(extendedTargets);
+  }
 
-      let foundBaseUrl = await scanTargets(buildSubnetTargets(ip, 24));
-
-      if (!foundBaseUrl) {
-        const subnet21Targets = buildSubnetTargets(ip, 21);
-        const subnet24Targets = new Set(buildSubnetTargets(ip, 24));
-        const extendedTargets = subnet21Targets.filter((target) => !subnet24Targets.has(target));
-
-        foundBaseUrl = await scanTargets(extendedTargets);
-      }
-
-      if (foundBaseUrl) {
-        setBaseURL(foundBaseUrl);
-      } else {
-        alert("Could not find an OpenAI-compatible endpoint on the local network.");
-      }
-    } finally {
-      scanningRef.current = false;
-      setScanning(false);
-    }
-  };
-
-  return (
-    <TouchableOpacity
-      onPress={onPress}
-      disabled={scanning}
-    >
-      <Text style={styles.button}>
-        Find Local Server
-      </Text>
-    </TouchableOpacity>
-  );
+  return foundBaseUrl;
 }
-
-export default FindOpenAIButton;

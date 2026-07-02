@@ -53,6 +53,7 @@ function MessageControlsView({ message }: { message: MessageNode }) {
       {message.role === "assistant" &&
         <MaterialIconButton
           icon="refresh"
+          size={26}
           onPress={onRegenerate}
           disabled={!!editing || LLM.busy}
           color={colorScheme.secondary}
@@ -60,12 +61,14 @@ function MessageControlsView({ message }: { message: MessageNode }) {
       }
       <MaterialIconButton
         icon="edit"
+        size={26}
         onPress={() => setEditing(message.id)}
         disabled={!!editing || LLM.busy}
         color={colorScheme.secondary}
       />
       <MaterialIconButton
         icon="chevron-left"
+        size={26}
         onPress={() => setMappings((prev) => lastChild(prev, message.parent!))}
         disabled={index <= 0 || !!editing || LLM.busy}
         color={colorScheme.secondary}
@@ -77,12 +80,14 @@ function MessageControlsView({ message }: { message: MessageNode }) {
       </Text>
       <MaterialIconButton
         icon="chevron-right"
+        size={26}
         onPress={() => setMappings((prev) => nextChild(prev, message.parent!))}
         disabled={index === siblings.length - 1 || !!editing || LLM.busy}
         color={colorScheme.secondary}
       />
       <MaterialIconButton
         icon="delete"
+        size={26}
         onPress={() => deleteMessage(message.id)}
         disabled={!!editing || LLM.busy}
         color={colorScheme.secondary}

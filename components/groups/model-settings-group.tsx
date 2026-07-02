@@ -1,4 +1,3 @@
-import FindOpenAIButton from "@/components/buttons/find-open-ai-button";
 import ApiKeyField from "@/components/fields/api-key-field";
 import BaseUrlField from "@/components/fields/base-url-field";
 import HeaderView from "@/components/views/header-view";
@@ -11,22 +10,24 @@ function ModelSettingsGroup() {
 
   const styles = StyleSheet.create({
     view: {
-      alignItems: "center",
+      alignItems: "stretch",
       justifyContent: "flex-start",
       gap: 16,
-      paddingHorizontal: 16
+      paddingHorizontal: 16,
+      marginTop: 32,
     },
     title: {
-      color: colorScheme.onSurface,
-      fontSize: 16,
-      fontWeight: "bold"
+      color: colorScheme.primary,
+      fontSize: 14,
+      fontWeight: "bold",
+      marginLeft: 8,
+      marginBottom: 8,
     }
   });
 
   return (
     <View style={styles.view}>
       <Text style={styles.title}>OAI-compatible Endpoint</Text>
-      <FindOpenAIButton />
       <BaseUrlField />
       <ApiKeyField />
       <HeaderView />

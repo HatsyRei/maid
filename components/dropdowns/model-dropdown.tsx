@@ -19,11 +19,13 @@ function ModelDropdown({ small }: { small?: boolean }) {
 
   if (small) {
     return (
-      <Dropdown
-        items={items}
-        selectedValue={model ?? "Select Model"}
-        onValueChange={setModel!}
-      />
+      <View style={{ marginLeft: 20, flexShrink: 1 }}>
+        <Dropdown
+          items={items}
+          selectedValue={model ?? "Select Model"}
+          onValueChange={setModel!}
+        />
+      </View>
     );
   }
 

@@ -48,12 +48,6 @@ function RootLayoutContent() {
             headerShown: true 
           }} 
         />
-        <Stack.Screen 
-          name="about" 
-          options={{ 
-            headerShown: true 
-          }} 
-        />
       </Stack>
     </GestureHandlerRootView>
   );

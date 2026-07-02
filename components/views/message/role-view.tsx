@@ -14,7 +14,7 @@ function MessageRoleView({ message }: { message: MessageNode }) {
       gap: 8
     },
     role: {
-      color: colorScheme.secondary,
+      color: colorScheme.primary,
       fontSize: 16,
       fontWeight: "bold",
       marginLeft: 8,
@@ -30,7 +30,7 @@ function MessageRoleView({ message }: { message: MessageNode }) {
 
   return (
     <View style={styles.row}>
-      <Text style={[styles.role, { color: colorScheme.secondary }]}>
+      <Text style={[styles.role, { color: colorScheme.primary }]}>
         {role}
       </Text>
     </View>

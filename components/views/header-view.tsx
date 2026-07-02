@@ -2,7 +2,7 @@ import { MaterialIconButton } from "@/components/buttons/icon-button";
 import { useLLM, useSystem } from "@/context";
 import { randomUUID } from "expo-crypto";
 import { useEffect, useState } from "react";
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TextInput, View } from "react-native";
 
 function HeaderView() {
   const { colorScheme } = useSystem();
@@ -13,26 +13,22 @@ function HeaderView() {
     container: {
       flexDirection: "column",
       justifyContent: "flex-start",
-      alignItems: "center"
+      alignItems: "center",
+      marginTop: 16
+    },
+    titleRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      width: "100%",
+      paddingRight: 8,
+      marginBottom: 8
     },
     title: {
-      color: colorScheme.onSurface,
-      fontSize: 16,
-      fontWeight: "bold"
-    },
-    buttonRow: {
-      flexDirection: "row",
-      justifyContent: "space-evenly",
-      alignItems: "center",
-      gap: 16,
-      marginVertical: 8
-    },
-    button: { 
       color: colorScheme.primary,
-      backgroundColor: colorScheme.surfaceVariant,
-      paddingVertical: 8,
-      paddingHorizontal: 16,
-      borderRadius: 20,
+      fontSize: 14,
+      fontWeight: "bold",
+      marginLeft: 8
     },
   });
 
@@ -41,11 +37,6 @@ function HeaderView() {
   const addHeader = () => {
     const newKey = randomUUID();
     setKeys((prev) => [...prev, newKey]);
-  }
-
-  const clearHeaders = () => {
-    setKeys([]);
-    setHeaders({});
   }
 
   const onDelete = (headerKey: string) => {
@@ -59,26 +50,15 @@ function HeaderView() {
 
   return (
     <View style={styles.container}>
-      <Text
-        style={styles.title}
-      >
-        Request Headers
-      </Text>
-      <View style={styles.buttonRow}>
-        <TouchableOpacity
+      <View style={styles.titleRow}>
+        <Text style={styles.title}>
+          Request Headers
+        </Text>
+        <MaterialIconButton
+          icon="add"
+          size={24}
           onPress={addHeader}
-        >
-          <Text style={styles.button}>
-            Add Header
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={clearHeaders}
-        >
-          <Text style={styles.button}>
-            Clear Headers
-          </Text>
-        </TouchableOpacity>
+        />
       </View>
       {keys.map((key) => (
         <HeaderViewItem
@@ -120,6 +100,8 @@ function HeaderViewItem(props: HeaderViewItemProps) {
       color: colorScheme.onSurface,
       backgroundColor: colorScheme.surfaceVariant,
       borderRadius: 30,
+      borderWidth: 1,
+      borderColor: colorScheme.primary + "66",
       fontSize: 16,
       paddingVertical: 12,
       paddingHorizontal: 16,

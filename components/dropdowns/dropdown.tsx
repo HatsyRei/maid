@@ -70,7 +70,7 @@ function Dropdown<T>({
       fontSize: 14,
       flexShrink: 1,
       textOverflow: "ellipsis",
-      maxWidth: 200,
+      maxWidth: 140,
     },
     caret: { 
       paddingHorizontal: 6, 

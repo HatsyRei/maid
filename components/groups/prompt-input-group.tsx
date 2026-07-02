@@ -1,6 +1,6 @@
 import { useSystem } from "@/context";
 import { useMemo, useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import PromptButton from "../buttons/prompt-button";
 import PromptInputField from "../fields/prompt-input-field";
 
@@ -23,13 +23,9 @@ function PromptInputGroup() {
           alignItems: "center",
           paddingVertical: 4,
           paddingHorizontal: 12,
-          marginTop: 8,
+          marginTop: 16,
+          marginBottom: 8,
           alignSelf: "stretch",
-        },
-        clearButtonText: {
-          color: colorScheme.primary,
-          paddingVertical: 8,
-          fontSize: 14,
         },
       }),
     [colorScheme],
@@ -39,18 +35,6 @@ function PromptInputGroup() {
     <View
       style={styles.root}
     >
-      {promptText.length > 0 && (
-        <TouchableOpacity
-          testID="clear-prompt-button"
-          onPress={() => setPromptText("")}
-        >
-          <Text 
-            style={styles.clearButtonText}
-          >
-            Clear Prompt
-          </Text>
-        </TouchableOpacity>
-      )}
       <View style={styles.inputView}>
         <PromptInputField 
           promptText={promptText} 

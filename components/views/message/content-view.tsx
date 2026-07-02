@@ -207,10 +207,12 @@ function MessageContentView({ message }: { message: MessageNode }) {
         >
           <MaterialIconButton
             icon="check"
+            size={26}
             onPress={onEdit}
           />
           <MaterialIconButton
             icon="close"
+            size={26}
             onPress={onEditDone}
           />
         </View>
