@@ -1,5 +1,4 @@
 import FindOpenAIButton from "@/components/buttons/find-open-ai-button";
-import ModelDropdown from "@/components/dropdowns/model-dropdown";
 import ApiKeyField from "@/components/fields/api-key-field";
 import BaseUrlField from "@/components/fields/base-url-field";
 import HeaderView from "@/components/views/header-view";
@@ -26,8 +25,7 @@ function ModelSettingsGroup() {
 
   return (
     <View style={styles.view}>
-      <Text style={styles.title}>Model Settings</Text>
-      <ModelDropdown />
+      <Text style={styles.title}>OAI-compatible Endpoint</Text>
       <FindOpenAIButton />
       <BaseUrlField />
       <ApiKeyField />
