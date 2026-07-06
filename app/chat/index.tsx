@@ -5,7 +5,8 @@ import { getConversation, hasNode, MessageNode } from "message-nodes";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Animated, FlatList, NativeScrollEvent, NativeSyntheticEvent, PanResponder, StyleSheet, View } from "react-native";
 
-const MIN_SCROLL_THUMB_HEIGHT = 40;
+const SCROLL_THUMB_HEIGHT = 48;
+const SCROLL_THUMB_IDLE_TIMEOUT = 1200;
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max);
@@ -22,11 +23,14 @@ function Chat() {
     viewportHeight: 0,
   });
   const thumbTop = useRef(new Animated.Value(0)).current;
-  const thumbHeight = useRef(new Animated.Value(MIN_SCROLL_THUMB_HEIGHT)).current;
+  const thumbOpacity = useRef(new Animated.Value(0)).current;
   const lastThumbTopRef = useRef(0);
-  const lastThumbHeightRef = useRef(MIN_SCROLL_THUMB_HEIGHT);
+  const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const draggingRef = useRef(false);
   const [showScrollThumb, setShowScrollThumb] = useState(false);
   const showScrollThumbRef = useRef(showScrollThumb);
+  const [thumbInteractive, setThumbInteractiveState] = useState(false);
+  const thumbInteractiveRef = useRef(false);
   const [footerHeight, setFooterHeight] = useState(0);
   const conversation = useMemo(
     () => (root ? getConversation(mappings, root).slice(1) : []),
@@ -42,14 +46,40 @@ function Chat() {
     setShowScrollThumb(visible);
   };
 
-  const getThumbHeight = () => {
-    const { contentHeight, viewportHeight } = metricsRef.current;
-
-    if (contentHeight <= 0 || viewportHeight <= 0) {
-      return MIN_SCROLL_THUMB_HEIGHT;
+  const setThumbInteractive = (interactive: boolean) => {
+    if (thumbInteractiveRef.current === interactive) {
+      return;
     }
 
-    return Math.max(MIN_SCROLL_THUMB_HEIGHT, (viewportHeight * viewportHeight) / contentHeight);
+    thumbInteractiveRef.current = interactive;
+    setThumbInteractiveState(interactive);
+  };
+
+  const revealThumb = () => {
+    if (hideTimerRef.current) {
+      clearTimeout(hideTimerRef.current);
+      hideTimerRef.current = null;
+    }
+
+    setThumbInteractive(true);
+    thumbOpacity.stopAnimation();
+    thumbOpacity.setValue(1);
+
+    if (draggingRef.current) {
+      return;
+    }
+
+    hideTimerRef.current = setTimeout(() => {
+      Animated.timing(thumbOpacity, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }).start(({ finished }) => {
+        if (finished) {
+          setThumbInteractive(false);
+        }
+      });
+    }, SCROLL_THUMB_IDLE_TIMEOUT);
   };
 
   const updateThumbPosition = () => {
@@ -64,22 +94,14 @@ function Chat() {
     if (maxScroll <= 0 || viewportHeight <= 0) {
       setThumbVisibility(false);
       thumbTop.setValue(0);
-      thumbHeight.setValue(MIN_SCROLL_THUMB_HEIGHT);
       lastThumbTopRef.current = 0;
-      lastThumbHeightRef.current = MIN_SCROLL_THUMB_HEIGHT;
       return;
     }
 
     setThumbVisibility(true);
-    const nextThumbHeight = getThumbHeight();
-    const maxThumbTravel = Math.max(viewportHeight - nextThumbHeight, 0);
+    const maxThumbTravel = Math.max(viewportHeight - SCROLL_THUMB_HEIGHT, 0);
     const clampedOffset = clamp(offset, 0, maxScroll);
     const nextThumbTop = maxScroll === 0 ? 0 : (clampedOffset / maxScroll) * maxThumbTravel;
-
-    if (Math.abs(nextThumbHeight - lastThumbHeightRef.current) > 0.5) {
-      thumbHeight.setValue(nextThumbHeight);
-      lastThumbHeightRef.current = nextThumbHeight;
-    }
 
     if (Math.abs(nextThumbTop - lastThumbTopRef.current) > 0.5) {
       thumbTop.setValue(nextThumbTop);
@@ -109,7 +131,9 @@ function Chat() {
         return;
       }
 
+      draggingRef.current = true;
       dragStartOffsetRef.current = metricsRef.current.offset;
+      revealThumb();
     },
     onPanResponderMove: (_, gestureState) => {
       if (!root) {
@@ -123,11 +147,18 @@ function Chat() {
         return;
       }
 
-      const currentThumbHeight = getThumbHeight();
-      const maxThumbTravel = Math.max(viewportHeight - currentThumbHeight, 1);
+      const maxThumbTravel = Math.max(viewportHeight - SCROLL_THUMB_HEIGHT, 1);
       const scrollDelta = (gestureState.dy / maxThumbTravel) * maxScroll;
 
       scrollToOffset(dragStartOffsetRef.current + scrollDelta);
+    },
+    onPanResponderRelease: () => {
+      draggingRef.current = false;
+      revealThumb();
+    },
+    onPanResponderTerminate: () => {
+      draggingRef.current = false;
+      revealThumb();
     },
   }), [root]);
 
@@ -138,6 +169,7 @@ function Chat() {
 
     metricsRef.current.offset = event.nativeEvent.contentOffset.y;
     updateThumbPosition();
+    revealThumb();
   };
 
   const handleContentSizeChange = (_: number, height: number) => {
@@ -160,13 +192,20 @@ function Chat() {
     metricsRef.current.offset = 0;
     metricsRef.current.contentHeight = 0;
     thumbTop.setValue(0);
-    thumbHeight.setValue(MIN_SCROLL_THUMB_HEIGHT);
+    thumbOpacity.setValue(0);
     lastThumbTopRef.current = 0;
-    lastThumbHeightRef.current = MIN_SCROLL_THUMB_HEIGHT;
+    setThumbInteractive(false);
 
     requestAnimationFrame(() => {
       scrollToOffset(0);
     });
+
+    return () => {
+      if (hideTimerRef.current) {
+        clearTimeout(hideTimerRef.current);
+        hideTimerRef.current = null;
+      }
+    };
   }, [root]);
 
   const renderItem = useCallback(({ item }: { item: MessageNode }) => (
@@ -244,10 +283,12 @@ function Chat() {
         {showScrollThumb && <View style={styles.scrollIndicatorContainer}>
           <Animated.View
             testID="chat-scroll-thumb"
+            pointerEvents={thumbInteractive ? "auto" : "none"}
             style={[
               styles.scrollThumb,
               {
-                height: thumbHeight,
+                height: SCROLL_THUMB_HEIGHT,
+                opacity: thumbOpacity,
                 transform: [{ translateY: thumbTop }],
               },
             ]}
