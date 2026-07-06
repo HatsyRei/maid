@@ -83,6 +83,62 @@ async function scanTargets(targets: Array<string>): Promise<string | undefined> 
   return undefined;
 }
 
+function isValidIpv4(ip: string): boolean {
+  const octets = ip.split(".");
+  if (octets.length !== 4) return false;
+
+  return octets.every((octet) => {
+    if (!/^\d{1,3}$/.test(octet)) return false;
+    const value = Number(octet);
+    return value >= 0 && value <= 255;
+  });
+}
+
+function isValidPort(port: string): boolean {
+  if (!/^\d{1,5}$/.test(port)) return false;
+  const value = Number(port);
+  return value >= 1 && value <= 65535;
+}
+
+/**
+ * Parses a user-entered base URL and returns the canonical
+ * `http://<ip>:<port>/v1` form, or `undefined` when the input is not a valid
+ * `http://<ip>`, `http://<ip>:<port>`, or `http://<ip>:<port>/v1` address.
+ * When no port is supplied, the default port is assumed.
+ */
+export function normalizeBaseUrl(input: string): string | undefined {
+  const trimmed = input.trim().replace(/\/+$/, "");
+  const match = /^http:\/\/([^/:]+)(?::(\d+))?(?:\/v1)?$/i.exec(trimmed);
+  if (!match) return undefined;
+
+  const ip = match[1];
+  const port = match[2] ?? String(DEFAULT_PORT);
+
+  if (!isValidIpv4(ip) || !isValidPort(port)) return undefined;
+
+  return `http://${ip}:${port}/v1`;
+}
+
+export async function validateEndpoint(baseUrl: string): Promise<boolean> {
+  const modelsUrl = `${baseUrl}/models`;
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+
+  try {
+    const response = await fetch(modelsUrl, {
+      method: "GET",
+      signal: controller.signal,
+    });
+
+    // 401/403 can still indicate a valid OpenAI-compatible endpoint.
+    return response.status >= 200 && response.status < 500 && response.status !== 404;
+  } catch {
+    return false;
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
 export async function scanForEndpoint(): Promise<string | undefined> {
   const ip = await Network.getIpAddressAsync();
   if (!ip) throw new Error("Could not determine local IP");

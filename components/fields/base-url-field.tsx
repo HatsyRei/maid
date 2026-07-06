@@ -1,5 +1,5 @@
 import { useLLM, useSystem } from "@/context";
-import { scanForEndpoint } from "@/utilities/scan-endpoint";
+import { normalizeBaseUrl, scanForEndpoint, validateEndpoint } from "@/utilities/scan-endpoint";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useRef, useState } from "react";
 import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
@@ -52,6 +52,16 @@ function BaseUrlField() {
     scanningRef.current = true;
     setScanning(true);
     try {
+      // When a well-formed base URL is already present, validate it instead of
+      // scanning the entire subnet. This avoids an expensive scan when a good
+      // address exists.
+      const normalized = normalizeBaseUrl(baseURL ?? "");
+      if (normalized && await validateEndpoint(normalized)) {
+        setBaseURL(normalized);
+        setFoundURL(normalized);
+        return;
+      }
+
       const found = await scanForEndpoint();
       if (found) {
         setBaseURL(found);
