@@ -13,8 +13,11 @@ function PromptInputGroup() {
     () =>
       StyleSheet.create({
         root: {
-          flexDirection: "column",
-          alignItems: "center",
+          flexDirection: "row",
+          alignItems: "flex-end",
+          marginTop: 16,
+          marginBottom: 8,
+          gap: 8,
         },
         inputView: {
           backgroundColor: colorScheme.surfaceVariant,
@@ -23,9 +26,7 @@ function PromptInputGroup() {
           alignItems: "center",
           paddingVertical: 4,
           paddingHorizontal: 12,
-          marginTop: 16,
-          marginBottom: 8,
-          alignSelf: "stretch",
+          flex: 1,
         },
       }),
     [colorScheme],
@@ -40,11 +41,11 @@ function PromptInputGroup() {
           promptText={promptText} 
           setPromptText={setPromptText} 
         />
-        <PromptButton 
-          promptText={promptText} 
-          setPromptText={setPromptText} 
-        />
       </View>
+      <PromptButton 
+        promptText={promptText} 
+        setPromptText={setPromptText} 
+      />
     </View>
   );
 }

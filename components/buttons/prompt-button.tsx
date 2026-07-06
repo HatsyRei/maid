@@ -73,22 +73,41 @@ function PromptButton({ promptText, setPromptText }: PromptButtonProps) {
     return (
       <MaterialIconButton
         testID="stop-button"
-        icon="stop-circle"
-        size={26}
-        color={colorScheme.onError}
+        icon="stop"
+        size={22}
+        color={colorScheme.onPrimary}
+        style={{
+          width: 48,
+          height: 48,
+          borderRadius: 24,
+          backgroundColor: colorScheme.primary,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
         onPress={LLM.stop}
       />
     );
   }
 
+  const disabled = !LLM.ready || promptText.trim().length === 0;
+
   return (
     <MaterialIconButton
       testID="send-button"
       icon="send"
-      size={26}
-      color={colorScheme.primary}
+      size={22}
+      color={colorScheme.onPrimary}
+      disabledColor={colorScheme.onSurfaceVariant}
+      style={{
+        width: 48,
+        height: 48,
+        borderRadius: 24,
+        backgroundColor: disabled ? colorScheme.surfaceVariant : colorScheme.primary,
+        justifyContent: "center",
+        alignItems: "center",
+      }}
       onPress={prompt}
-      disabled={!LLM.ready || promptText.trim().length === 0}
+      disabled={disabled}
     />
   );
 }
