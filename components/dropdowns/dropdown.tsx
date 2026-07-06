@@ -28,6 +28,7 @@ interface DropdownProps<T> {
 
 const POPOVER_MIN_WIDTH = 180;
 const POPOVER_VERT_GAP = 8;
+const POPOVER_MAX_HEIGHT = 400;
 
 function Dropdown<T>({
   items,
@@ -85,7 +86,7 @@ function Dropdown<T>({
       backgroundColor: colorScheme.surfaceVariant,
       borderRadius: 12,
       paddingVertical: 6,
-      maxHeight: 400,
+      maxHeight: POPOVER_MAX_HEIGHT,
     },
     itemBtn: { 
       paddingVertical: 10, 
@@ -108,11 +109,11 @@ function Dropdown<T>({
     left = Math.max(8, Math.min(left, screen.width - width - 8));
 
     // prefer below; if not enough space, put above
-    let top = anchor.y + anchor.height + 80;
-    if (top + 200 > screen.height) {
-      top = anchor.y - 200 - POPOVER_VERT_GAP;
+    let top = anchor.y + anchor.height + POPOVER_VERT_GAP;
+    if (top + POPOVER_MAX_HEIGHT > screen.height) {
+      top = anchor.y - POPOVER_MAX_HEIGHT - POPOVER_VERT_GAP;
     }
-    top = Math.max(8, Math.min(top, screen.height - 200 - 8));
+    top = Math.max(8, Math.min(top, screen.height - POPOVER_MAX_HEIGHT - 8));
 
     return { top, left, width };
   })();
