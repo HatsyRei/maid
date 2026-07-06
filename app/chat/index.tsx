@@ -1,6 +1,7 @@
 import PromptInputGroup from "@/components/groups/prompt-input-group";
 import MessageView from "@/components/views/message/message-view";
-import { useChat, useSystem } from "@/context";
+import { useChat, useLLM, useSystem } from "@/context";
+import { useIsFocused } from "@react-navigation/native";
 import { getConversation, hasNode, MessageNode } from "message-nodes";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Animated, FlatList, NativeScrollEvent, NativeSyntheticEvent, PanResponder, StyleSheet, View } from "react-native";
@@ -15,6 +16,8 @@ function clamp(value: number, min: number, max: number) {
 function Chat() {
   const { colorScheme } = useSystem();
   const { mappings, root } = useChat();
+  const { refreshModels } = useLLM();
+  const isFocused = useIsFocused();
   const listRef = useRef<FlatList<MessageNode>>(null);
   const dragStartOffsetRef = useRef(0);
   const metricsRef = useRef({
@@ -195,6 +198,15 @@ function Chat() {
     setFooterHeight(Math.max(height - 96, 0));
     updateThumbPosition();
   };
+
+  // Refresh the model list whenever the conversation view gains focus (initial
+  // launch and every return from settings). Gating on focus avoids fetching on
+  // every keystroke while the endpoint is being edited in settings.
+  useEffect(() => {
+    if (isFocused) {
+      refreshModels?.();
+    }
+  }, [isFocused, refreshModels]);
 
   useEffect(() => {
     if (!root) {

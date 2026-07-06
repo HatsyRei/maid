@@ -3,7 +3,7 @@ import useStoredString from "@/hooks/use-stored-string";
 import { fetch as expoFetch } from "expo/fetch";
 import { MessageNode } from "message-nodes";
 import OpenAI from 'openai';
-import { createContext, useContext, useEffect, useRef, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { OpenAIContextProps } from "./types";
 
 const DEFAULT_BASE_URL = "https://api.openai.com/v1";
@@ -33,6 +33,7 @@ export function OpenAIProvider({ children }: { children: React.ReactNode }) {
 
   const [openai, setOpenAI] = useState<OpenAI | undefined>(undefined);
   const [models, setModels] = useState<Array<string>>([]);
+  const modelsRequestRef = useRef(0);
 
   useEffect(() => {
     const resolvedBaseURL = baseURL ?? DEFAULT_BASE_URL;
@@ -66,23 +67,33 @@ export function OpenAIProvider({ children }: { children: React.ReactNode }) {
     }
   }, [apiKey, baseURL, headers]);
 
+  // Clear the model list immediately when the endpoint becomes invalid so stale
+  // models never linger. Fetching is driven on demand via refreshModels (called
+  // when the conversation view gains focus) to avoid a network request on every
+  // keystroke while editing the endpoint in settings.
   useEffect(() => {
-    const fetchModels = async () => {
-      if (!openai) {
-        setModels([]);
-        return;
-      }
+    if (!openai) {
+      setModels([]);
+    }
+  }, [openai]);
 
-      try {
-        const response = await openai.models.list();
-        setModels(response.data.map((model) => model.id));
-      } catch (error) {
-        console.error("Error fetching OpenAI models:", error);
-        setModels([]);
-      }
-    };
+  const refreshModels = useCallback(async () => {
+    if (!openai) {
+      setModels([]);
+      return;
+    }
 
-    fetchModels();
+    const requestId = ++modelsRequestRef.current;
+
+    try {
+      const response = await openai.models.list();
+      if (modelsRequestRef.current !== requestId) return;
+      setModels(response.data.map((model) => model.id));
+    } catch (error) {
+      if (modelsRequestRef.current !== requestId) return;
+      console.error("Error fetching OpenAI models:", error);
+      setModels([]);
+    }
   }, [openai]);
 
   const prompt = async (
@@ -170,6 +181,7 @@ export function OpenAIProvider({ children }: { children: React.ReactNode }) {
     model,
     setModel,
     models,
+    refreshModels,
     parameters,
     setParameters,
     headers,

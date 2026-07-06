@@ -20,6 +20,7 @@ interface LanguageModelBaseProps {
 
 interface ModelMixin {
   models: Array<string>;
+  refreshModels: () => Promise<void>;
   model: string | undefined;
   setModel: React.Dispatch<React.SetStateAction<string | undefined>>;
 }
