@@ -172,6 +172,19 @@ function Chat() {
     revealThumb();
   };
 
+  const handleScrollSettled = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    if (!root) {
+      return;
+    }
+
+    const { contentSize, layoutMeasurement, contentOffset } = event.nativeEvent;
+    metricsRef.current.contentHeight = contentSize.height;
+    metricsRef.current.viewportHeight = layoutMeasurement.height;
+    metricsRef.current.offset = contentOffset.y;
+    updateThumbPosition();
+    revealThumb();
+  };
+
   const handleContentSizeChange = (_: number, height: number) => {
     metricsRef.current.contentHeight = height;
     updateThumbPosition();
@@ -271,8 +284,10 @@ function Chat() {
           keyExtractor={(item, index) => item.id?.toString() ?? String(index)}
           renderItem={renderItem}
           onScroll={handleScroll}
+          onScrollEndDrag={handleScrollSettled}
+          onMomentumScrollEnd={handleScrollSettled}
           onContentSizeChange={handleContentSizeChange}
-          scrollEventThrottle={32}
+          scrollEventThrottle={16}
           showsVerticalScrollIndicator={false}
           removeClippedSubviews={true}
           initialNumToRender={12}
