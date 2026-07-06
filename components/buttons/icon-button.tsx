@@ -19,7 +19,7 @@ export function MaterialIconButton(props: IconButtonProps) {
   return (
     <TouchableOpacity 
       testID={props.testID}
-      style={[props.style, { margin: 4 }]}
+      style={[{ margin: 4 }, props.style]}
       onPress={props.onPress}
       disabled={props.disabled}
     >

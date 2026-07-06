@@ -10,10 +10,8 @@ function ApiKeyField() {
       color: colorScheme.onSurface,
       backgroundColor: colorScheme.surfaceVariant,
       borderRadius: 30,
-      borderWidth: 1,
-      borderColor: colorScheme.primary + "66",
       fontSize: 16,
-      paddingVertical: 12,
+      height: 48,
       paddingHorizontal: 16,
       width: "100%",
     }

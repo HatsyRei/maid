@@ -22,18 +22,14 @@ function BaseUrlField() {
       color: colorScheme.onSurface,
       backgroundColor: colorScheme.surfaceVariant,
       borderRadius: 30,
-      borderWidth: 1,
-      borderColor: colorScheme.primary + "66",
       fontSize: 16,
-      paddingVertical: 12,
+      height: 48,
       paddingHorizontal: 16,
       flex: 1,
     },
     iconButton: {
-      backgroundColor: colorScheme.surfaceVariant,
+      backgroundColor: colorScheme.primary,
       borderRadius: 24,
-      borderWidth: 1,
-      borderColor: colorScheme.primary + "66",
       width: 48,
       height: 48,
       alignItems: "center",
@@ -46,6 +42,7 @@ function BaseUrlField() {
   }
 
   const succeeded = foundURL !== undefined && baseURL === foundURL;
+  const disabled = scanning || succeeded;
 
   const onScan = async () => {
     if (scanningRef.current || succeeded) return;
@@ -87,14 +84,17 @@ function BaseUrlField() {
       />
       <TouchableOpacity
         testID="find-endpoint-button"
-        style={[styles.iconButton, { opacity: scanning ? 0.5 : 1 }]}
+        style={[
+          styles.iconButton,
+          { backgroundColor: disabled ? colorScheme.surfaceVariant : colorScheme.primary },
+        ]}
         onPress={onScan}
-        disabled={scanning || succeeded}
+        disabled={disabled}
       >
         <MaterialIcons
           name={succeeded ? "check" : "search"}
           size={24}
-          color={succeeded ? colorScheme.primary : colorScheme.onSurface}
+          color={disabled ? colorScheme.onSurfaceVariant : colorScheme.onPrimary}
         />
       </TouchableOpacity>
     </View>

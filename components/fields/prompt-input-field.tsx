@@ -17,6 +17,7 @@ function PromptInputField({ promptText, setPromptText }: PromptInputFieldProps) 
       flex: 1,
       maxHeight: 200,
       borderWidth: 0,
+      paddingVertical: 0,
       marginHorizontal: 8,
     }
   });

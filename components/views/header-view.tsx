@@ -21,7 +21,6 @@ function HeaderView() {
       alignItems: "center",
       justifyContent: "space-between",
       width: "100%",
-      paddingRight: 8,
       marginBottom: 8
     },
     title: {
@@ -57,6 +56,16 @@ function HeaderView() {
         <MaterialIconButton
           icon="add"
           size={24}
+          color={colorScheme.onPrimary}
+          style={{
+            width: 48,
+            height: 48,
+            borderRadius: 24,
+            margin: 0,
+            backgroundColor: colorScheme.primary,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
           onPress={addHeader}
         />
       </View>
@@ -100,10 +109,8 @@ function HeaderViewItem(props: HeaderViewItemProps) {
       color: colorScheme.onSurface,
       backgroundColor: colorScheme.surfaceVariant,
       borderRadius: 30,
-      borderWidth: 1,
-      borderColor: colorScheme.primary + "66",
       fontSize: 16,
-      paddingVertical: 12,
+      height: 48,
       paddingHorizontal: 16,
       width: "40%",
     }
@@ -156,6 +163,7 @@ function HeaderViewItem(props: HeaderViewItemProps) {
       <MaterialIconButton
         icon="delete"
         size={24}
+        color={colorScheme.primary}
         onPress={props.onDelete}
       />
     </View>

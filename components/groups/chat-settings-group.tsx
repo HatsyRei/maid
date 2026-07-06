@@ -31,15 +31,16 @@ function ChatSettingsGroup() {
       color: colorScheme.onSurface,
       backgroundColor: colorScheme.surfaceVariant,
       borderRadius: 30,
-      borderWidth: 1,
-      borderColor: colorScheme.primary + "66",
       fontSize: 16,
-      paddingVertical: 12,
       paddingHorizontal: 16,
       width: "100%",
     },
+    singleLine: {
+      height: 48,
+    },
     multiline: {
       minHeight: 96,
+      paddingVertical: 12,
       borderRadius: 20,
       textAlignVertical: "top",
     },
@@ -49,7 +50,7 @@ function ChatSettingsGroup() {
     <View style={styles.view}>
       <Text style={styles.title}>Chat Settings</Text>
       <TextInput
-        style={styles.input}
+        style={[styles.input, styles.singleLine]}
         placeholder="Username"
         placeholderTextColor={colorScheme.onSurfaceVariant}
         underlineColorAndroid="transparent"
@@ -57,7 +58,7 @@ function ChatSettingsGroup() {
         onChangeText={setUserName}
       />
       <TextInput
-        style={styles.input}
+        style={[styles.input, styles.singleLine]}
         placeholder="Assistant name"
         placeholderTextColor={colorScheme.onSurfaceVariant}
         underlineColorAndroid="transparent"

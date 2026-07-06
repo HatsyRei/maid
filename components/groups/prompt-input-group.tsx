@@ -24,6 +24,7 @@ function PromptInputGroup() {
           borderRadius: 30,
           flexDirection: "row",
           alignItems: "center",
+          minHeight: 48,
           paddingVertical: 4,
           paddingHorizontal: 12,
           flex: 1,
