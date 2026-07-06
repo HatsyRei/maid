@@ -21,7 +21,7 @@ function isOfficialOpenAIEndpoint(baseURL: string): boolean {
 const OpenAIContext = createContext<OpenAIContextProps | undefined>(undefined);
 
 export function OpenAIProvider({ children }: { children: React.ReactNode }) {
-  const stopRef = useRef<boolean>(false);
+  const abortRef = useRef<AbortController | null>(null);
   const [busy, setBusy] = useState<boolean>(false);
 
   const [baseURL, setBaseURL] = useStoredString("open-ai-base-url", DEFAULT_BASE_URL);
@@ -40,12 +40,14 @@ export function OpenAIProvider({ children }: { children: React.ReactNode }) {
 
     if (requiresApiKey && !apiKey) {
       console.warn("OpenAI API key not set");
+      setOpenAI(undefined);
       return;
     }
 
     try {
       new URL(resolvedBaseURL);
     } catch {
+      setOpenAI(undefined);
       return;
     }
 
@@ -60,18 +62,23 @@ export function OpenAIProvider({ children }: { children: React.ReactNode }) {
       setOpenAI(openaiInstance);
     } catch (error) {
       console.warn("Failed to create OpenAI instance:", error);
+      setOpenAI(undefined);
     }
   }, [apiKey, baseURL, headers]);
 
   useEffect(() => {
     const fetchModels = async () => {
-      if (!openai) return;
+      if (!openai) {
+        setModels([]);
+        return;
+      }
 
       try {
         const response = await openai.models.list();
         setModels(response.data.map((model) => model.id));
       } catch (error) {
         console.error("Error fetching OpenAI models:", error);
+        setModels([]);
       }
     };
 
@@ -94,51 +101,58 @@ export function OpenAIProvider({ children }: { children: React.ReactNode }) {
 
     setBusy(true);
 
-    // The conversation includes an empty assistant placeholder node that
-    // receives the streamed response. Sending it to the server (as
-    // {"role":"assistant","content":""}) makes OpenAI-compatible backends like
-    // llama.cpp treat it as an assistant prefix to continue, corrupting the
-    // chat template and producing gibberish. Drop trailing empty assistant
-    // messages before sending.
-    const requestMessages = messages.slice();
-    while (
-      requestMessages.length > 0 &&
-      requestMessages[requestMessages.length - 1].role === "assistant" &&
-      requestMessages[requestMessages.length - 1].content.trim() === ""
-    ) {
-      requestMessages.pop();
-    }
+    const controller = new AbortController();
+    abortRef.current = controller;
 
-    const stream = await openai.chat.completions.create({
-      model,
-      messages: requestMessages.map((msg) => ({
-        role: msg.role as "system" | "user" | "assistant",
-        content: msg.content,
-      })),
-      stream: true,
-      ...parameters,
-    }, {
-      maxRetries: 3,
-    });
-
-    
-    for await (const event of stream) {
-      if (stopRef.current) {
-        stream.controller.abort();
-        stopRef.current = false;
-        break;
+    try {
+      // The conversation includes an empty assistant placeholder node that
+      // receives the streamed response. Sending it to the server (as
+      // {"role":"assistant","content":""}) makes OpenAI-compatible backends like
+      // llama.cpp treat it as an assistant prefix to continue, corrupting the
+      // chat template and producing gibberish. Drop trailing empty assistant
+      // messages before sending.
+      const requestMessages = messages.slice();
+      while (
+        requestMessages.length > 0 &&
+        requestMessages[requestMessages.length - 1].role === "assistant" &&
+        requestMessages[requestMessages.length - 1].content.trim() === ""
+      ) {
+        requestMessages.pop();
       }
 
-      const chunk = event.choices[0]?.delta?.content;
-      if (chunk) {
-        onUpdate(chunk);
+      const stream = await openai.chat.completions.create({
+        model,
+        messages: requestMessages.map((msg) => ({
+          role: msg.role as "system" | "user" | "assistant",
+          content: msg.content,
+        })),
+        stream: true,
+        ...parameters,
+      }, {
+        maxRetries: 3,
+        signal: controller.signal,
+      });
+
+      for await (const event of stream) {
+        if (controller.signal.aborted) break;
+
+        const chunk = event.choices[0]?.delta?.content;
+        if (chunk) {
+          onUpdate(chunk);
+        }
       }
+    } catch (error) {
+      if (!controller.signal.aborted) {
+        console.error("Error during OpenAI completion:", error);
+      }
+    } finally {
+      abortRef.current = null;
+      setBusy(false);
     }
-    setBusy(false);
   };
 
   const stop = async () => {
-    stopRef.current = true;
+    abortRef.current?.abort();
   };
 
   const resetBaseURL = () => {
@@ -146,7 +160,7 @@ export function OpenAIProvider({ children }: { children: React.ReactNode }) {
   };
 
   const value = {
-    ready: !!openai && !!model,
+    ready: !!openai && !!model && models.includes(model),
     busy,
     baseURL,
     setBaseURL,
