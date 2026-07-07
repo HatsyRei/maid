@@ -35,7 +35,7 @@ function MarkdownImage({ uri }: { uri: string }) {
 function MessageContentView({ message }: { message: MessageNode }) {
   const [ showReasoning, setShowReasoning ] = useState<boolean>(false);
   const [ editText, setEditText ] = useState<string>(message.content);
-  const { mappings, setMappings, editing, setEditing } = useChat();
+  const { mappings, setMappings, editing, setEditing, editInPlace, setEditInPlace } = useChat();
   const { colorScheme } = useSystem();
   const { alert } = useDialog();
   const LLM = useLLM();
@@ -133,9 +133,9 @@ function MessageContentView({ message }: { message: MessageNode }) {
       return;
     }
 
-    if (message.role === "assistant") {
+    if (message.role === "assistant" || editInPlace) {
       setMappings(updateContent(mappings, message.id, editText));
-      setEditing(undefined);
+      onEditDone();
       return;
     }
 
@@ -182,6 +182,7 @@ function MessageContentView({ message }: { message: MessageNode }) {
 
   const onEditDone = () => {
     setEditing(undefined);
+    setEditInPlace(false);
     setEditText(message.content);
   };
 

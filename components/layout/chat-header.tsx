@@ -38,7 +38,7 @@ function Header(props: DrawerHeaderProps) {
       <MaterialIconButton
         testID="settings-button"
         icon="settings"
-        size={22}
+        size={20}
         onPress={() => router.push("/settings")}
       />
     </View>

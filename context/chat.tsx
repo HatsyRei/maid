@@ -7,6 +7,8 @@ import { useLLM } from "./language-model";
 interface ChatContextProps {
   editing: string | undefined;
   setEditing: Dispatch<SetStateAction<string | undefined>>;
+  editInPlace: boolean;
+  setEditInPlace: Dispatch<SetStateAction<boolean>>;
   root: string | undefined;
   setRoot: Dispatch<SetStateAction<string | undefined>>;
   mappings: Record<string, MessageNode<string>>;
@@ -20,6 +22,7 @@ export function ChatContextProvider({ children }: { children: ReactNode }) {
   const { busy } = useLLM();
   const [root, setRoot] = useStoredString("root-message-id");
   const [editing, setEditing] = useState<string | undefined>(undefined);
+  const [editInPlace, setEditInPlace] = useState<boolean>(false);
   const [mappings, setMappings] = useMappings(busy);
 
   const deleteMessage = useCallback((id: string) => {
@@ -29,12 +32,14 @@ export function ChatContextProvider({ children }: { children: ReactNode }) {
   const value = useMemo(() => ({
     editing,
     setEditing,
+    editInPlace,
+    setEditInPlace,
     root,
     setRoot,
     mappings,
     setMappings,
     deleteMessage,
-  }), [editing, setEditing, root, setRoot, mappings, setMappings, deleteMessage]);
+  }), [editing, setEditing, editInPlace, setEditInPlace, root, setRoot, mappings, setMappings, deleteMessage]);
 
   return (
     <ChatContext.Provider value={value}>

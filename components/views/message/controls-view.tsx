@@ -9,7 +9,7 @@ import { memo, useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 function MessageControlsView({ message }: { message: MessageNode }) {
-  const { mappings, setMappings, editing, setEditing, deleteMessage } = useChat();
+  const { mappings, setMappings, editing, setEditing, setEditInPlace, deleteMessage } = useChat();
   const { colorScheme } = useSystem();
   const LLM = useLLM();
 
@@ -61,12 +61,27 @@ function MessageControlsView({ message }: { message: MessageNode }) {
         />
       }
       <MaterialIconButton
-        icon="edit"
+        icon={message.role === "assistant" ? "edit-note" : "edit"}
         size={26}
-        onPress={() => setEditing(message.id)}
+        onPress={() => {
+          setEditInPlace(false);
+          setEditing(message.id);
+        }}
         disabled={!!editing || LLM.busy}
         color={colorScheme.secondary}
       />
+      {message.role === "user" &&
+        <MaterialIconButton
+          icon="edit-note"
+          size={26}
+          onPress={() => {
+            setEditInPlace(true);
+            setEditing(message.id);
+          }}
+          disabled={!!editing || LLM.busy}
+          color={colorScheme.secondary}
+        />
+      }
       <MaterialIconButton
         icon="chevron-left"
         size={26}
