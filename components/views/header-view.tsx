@@ -1,5 +1,6 @@
 import { MaterialIconButton } from "@/components/buttons/icon-button";
 import { useLLM, useSystem } from "@/context";
+import { typography } from "@/utilities/typography";
 import { randomUUID } from "expo-crypto";
 import { useEffect, useState } from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
@@ -23,9 +24,8 @@ function HeaderView() {
       width: "100%",
     },
     title: {
+      ...typography.titleSmall,
       color: colorScheme.onSurfaceVariant,
-      fontSize: 14,
-      fontWeight: "bold",
     },
   });
 
@@ -96,11 +96,11 @@ function HeaderViewItem(props: HeaderViewItemProps) {
       width: "100%"
     },
     input: {
+      ...typography.bodyLarge,
       color: colorScheme.onSurface,
       borderColor: colorScheme.outline,
       borderWidth: 1,
       borderRadius: 8,
-      fontSize: 16,
       height: 48,
       paddingHorizontal: 16,
       flex: 1,

@@ -1,4 +1,5 @@
 import { useSystem } from "@/context";
+import { typography } from "@/utilities/typography";
 import { useMemo } from "react";
 import { Modal, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
 
@@ -41,14 +42,12 @@ function AlertDialogView({ visible, title, message, buttons, onDismiss }: AlertD
           paddingHorizontal: 24,
         },
         title: {
+          ...typography.headlineSmall,
           color: colorScheme.onSurface,
-          fontSize: 22,
-          fontWeight: "bold",
         },
         message: {
+          ...typography.bodyMedium,
           color: colorScheme.onSurfaceVariant,
-          fontSize: 14,
-          lineHeight: 20,
           marginTop: 16,
         },
         actions: {
@@ -64,8 +63,7 @@ function AlertDialogView({ visible, title, message, buttons, onDismiss }: AlertD
           borderRadius: 20,
         },
         buttonText: {
-          fontSize: 14,
-          fontWeight: "bold",
+          ...typography.labelLarge,
         },
       }),
     [colorScheme],

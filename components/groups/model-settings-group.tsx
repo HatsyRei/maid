@@ -3,6 +3,7 @@ import BaseUrlField from "@/components/fields/base-url-field";
 import HeaderView from "@/components/views/header-view";
 import ParameterView from "@/components/views/parameter-view";
 import { useSystem } from "@/context";
+import { typography } from "@/utilities/typography";
 import { StyleSheet, Text, View } from "react-native";
 
 function ModelSettingsGroup() {
@@ -17,9 +18,8 @@ function ModelSettingsGroup() {
       marginTop: 32,
     },
     title: {
+      ...typography.titleSmall,
       color: colorScheme.primary,
-      fontSize: 14,
-      fontWeight: "bold",
       marginLeft: 8,
       marginBottom: 8,
     }

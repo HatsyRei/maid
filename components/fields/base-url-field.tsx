@@ -1,4 +1,5 @@
 import { useLLM, useDialog, useSystem } from "@/context";
+import { typography } from "@/utilities/typography";
 import { normalizeBaseUrl, scanForEndpoint, validateEndpoint } from "@/utilities/scan-endpoint";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useRef, useState } from "react";
@@ -20,10 +21,10 @@ function BaseUrlField() {
       width: "100%",
     },
     input: {
+      ...typography.bodyLarge,
       color: colorScheme.onSurface,
       backgroundColor: colorScheme.surfaceVariant,
       borderRadius: 30,
-      fontSize: 16,
       height: 48,
       paddingHorizontal: 16,
       flex: 1,

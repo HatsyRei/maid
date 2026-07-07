@@ -1,5 +1,6 @@
 import Dropdown from "@/components/dropdowns/dropdown";
 import { useLLM, useSystem } from "@/context";
+import { typography } from "@/utilities/typography";
 import { StyleSheet, Text, View } from "react-native";
 
 function ModelDropdown({ small }: { small?: boolean }) {
@@ -37,8 +38,8 @@ function ModelDropdown({ small }: { small?: boolean }) {
       width: "100%",
     },
     title: {
+      ...typography.titleMedium,
       color: colorScheme.onSurface,
-      fontSize: 16
     }
   });
   

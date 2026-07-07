@@ -1,4 +1,5 @@
 import { useLLM, useSystem } from "@/context";
+import { typography } from "@/utilities/typography";
 import { StyleSheet, TextInput } from "react-native";
 
 function ApiKeyField() {
@@ -7,10 +8,10 @@ function ApiKeyField() {
 
   const styles = StyleSheet.create({
     input: {
+      ...typography.bodyLarge,
       color: colorScheme.onSurface,
       backgroundColor: colorScheme.surfaceVariant,
       borderRadius: 30,
-      fontSize: 16,
       height: 48,
       paddingHorizontal: 16,
       width: "100%",

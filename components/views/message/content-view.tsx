@@ -3,6 +3,7 @@ import { useChat, useDialog, useLLM, useSystem } from "@/context";
 import getMetadata from "@/utilities/metadata";
 import splitReasoning from "@/utilities/reasoning";
 import { createStreamWriter } from "@/utilities/stream-writer";
+import { typography } from "@/utilities/typography";
 import Markdown from '@novastera-oss/react-native-markdown-display';
 import { randomUUID } from "expo-crypto";
 import { Image, type ImageLoadEventData } from "expo-image";
@@ -68,25 +69,25 @@ function MessageContentView({ message }: { message: MessageNode }) {
       alignSelf: "center",
     },
     showReasoningButtonText: {
+      ...typography.labelLarge,
       color: colorScheme.primary,
-      fontSize: 14,
     },
     reasoning: {
+      ...typography.bodyMedium,
       color: colorScheme.outline,
-      fontSize: 14,
       fontStyle: "italic",
     },
     content: {
+      ...typography.bodyMedium,
       color: colorScheme.onSurface,
-      fontSize: 14,
       paddingHorizontal: 0,
     },
   }), [colorScheme]);
 
   const markdownStyle = useMemo(() => StyleSheet.create({
     body: {
+      ...typography.bodyMedium,
       color: colorScheme.onSurface,
-      fontSize: 14,
     },
     link: {
       color: colorScheme.primary,

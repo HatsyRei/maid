@@ -3,6 +3,7 @@ import { useSystem } from "@/context";
 import { NativeStackHeaderProps } from "@react-navigation/native-stack";
 import * as Application from "expo-application";
 import { StyleSheet, Text, View } from "react-native";
+import { typography } from "@/utilities/typography";
 
 function DefaultHeader(props: NativeStackHeaderProps) {
   const { colorScheme } = useSystem();
@@ -23,13 +24,12 @@ function DefaultHeader(props: NativeStackHeaderProps) {
       marginRight: 12,
     },
     title: {
+      ...typography.titleLarge,
       flex: 1,
-      fontSize: 20,
-      fontWeight: "bold",
       color: colorScheme.onSurface,
     },
     version: {
-      fontSize: 12,
+      ...typography.bodySmall,
       color: colorScheme.outline,
       marginRight: 16,
     }

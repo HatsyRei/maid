@@ -1,4 +1,5 @@
 import { useSystem } from "@/context";
+import { typography } from "@/utilities/typography";
 import { MessageNode } from "message-nodes";
 import { memo, useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
@@ -14,9 +15,8 @@ function MessageRoleView({ message }: { message: MessageNode }) {
       gap: 8
     },
     role: {
+      ...typography.titleMedium,
       color: colorScheme.primary,
-      fontSize: 16,
-      fontWeight: "bold",
       marginLeft: 8,
     },
   }), [colorScheme]);

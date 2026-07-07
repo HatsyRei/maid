@@ -2,6 +2,7 @@ import { MaterialIconButton } from "@/components/buttons/icon-button";
 import { useChat, useLLM, useSystem } from "@/context";
 import getMetadata from "@/utilities/metadata";
 import { createStreamWriter } from "@/utilities/stream-writer";
+import { typography } from "@/utilities/typography";
 import { randomUUID } from "expo-crypto";
 import { branchNode, getChildren, getConversation, lastChild, MessageNode, nextChild } from "message-nodes";
 import { memo, useMemo } from "react";
@@ -18,8 +19,8 @@ function MessageControlsView({ message }: { message: MessageNode }) {
       alignItems: "center",
     },
     counter: {
+      ...typography.bodyMedium,
       color: colorScheme.secondary,
-      fontSize: 14,
       marginHorizontal: 4
     }
   }), [colorScheme]);

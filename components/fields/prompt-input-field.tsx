@@ -1,4 +1,5 @@
 import { useSystem } from "@/context";
+import { typography } from "@/utilities/typography";
 import { Dispatch, SetStateAction } from "react";
 import { StyleSheet, TextInput } from "react-native";
 
@@ -12,8 +13,8 @@ function PromptInputField({ promptText, setPromptText }: PromptInputFieldProps) 
 
   const styles = StyleSheet.create({
     input: {
+      ...typography.bodyLarge,
       color: colorScheme.onSurface,
-      fontSize: 16,
       flex: 1,
       maxHeight: 200,
       borderWidth: 0,

@@ -1,4 +1,5 @@
 import { useSystem } from "@/context";
+import { typography } from "@/utilities/typography";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import React, { Fragment, useRef, useState } from "react";
 import {
@@ -73,8 +74,8 @@ function Dropdown<T>({
       paddingVertical: 6,
     },
     label: {
+      ...typography.labelLarge,
       color: colorScheme.onSecondaryContainer,
-      fontSize: 14,
       flexShrink: 1,
       maxWidth: 160,
     },
@@ -101,8 +102,8 @@ function Dropdown<T>({
       paddingHorizontal: 20,
     },
     itemText: {
+      ...typography.labelLarge,
       color: colorScheme.onSurface,
-      fontSize: 14,
     },
     itemTextSelected: {
       color: colorScheme.primary,

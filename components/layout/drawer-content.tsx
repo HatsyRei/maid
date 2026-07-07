@@ -3,6 +3,7 @@ import { MaterialIconButton } from "@/components/buttons/icon-button";
 import { useChat, useSystem } from "@/context";
 import getMetadata from "@/utilities/metadata";
 import { validateMappings } from "@/utilities/mappings";
+import { typography } from "@/utilities/typography";
 import { randomUUID } from "expo-crypto";
 import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
@@ -100,8 +101,8 @@ function DrawerContent({ navigation }: { navigation?: { closeDrawer: () => void 
       paddingTop: 16,
     },
     controlsText: {
+      ...typography.bodyLarge,
       color: colorScheme.onSurface,
-      fontSize: 16,
     },
     controls: {
       flexDirection: "row",

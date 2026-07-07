@@ -1,4 +1,5 @@
 import { useSystem } from "@/context";
+import { typography } from "@/utilities/typography";
 import { StyleSheet, Text, TextInput, View } from "react-native";
 
 function ChatSettingsGroup() {
@@ -20,18 +21,17 @@ function ChatSettingsGroup() {
       marginTop: 40,
     },
     title: {
+      ...typography.titleSmall,
       color: colorScheme.primary,
-      fontSize: 14,
-      fontWeight: "bold",
       alignSelf: "flex-start",
       marginBottom: 8,
       marginLeft: 8,
     },
     input: {
+      ...typography.bodyLarge,
       color: colorScheme.onSurface,
       backgroundColor: colorScheme.surfaceVariant,
       borderRadius: 30,
-      fontSize: 16,
       paddingHorizontal: 16,
       width: "100%",
     },

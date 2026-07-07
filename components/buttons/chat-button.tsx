@@ -1,5 +1,6 @@
 import Popover from "@/components/views/popover-view";
 import { useChat, useDialog, useSystem } from "@/context";
+import { typography } from "@/utilities/typography";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import * as FileSystem from "expo-file-system";
 import { deleteNode, getRootMapping, MessageNode, updateContent } from "message-nodes";
@@ -86,8 +87,8 @@ function ChatButton({ node, testID }: { node: MessageNode<string>, testID?: stri
       width: "100%",
     },
     buttonText: {
+      ...typography.bodyLarge,
       color: colorScheme.onSurface,
-      fontSize: 16,
     },
     buttonTextActive: {
       color: colorScheme.primary
@@ -101,8 +102,8 @@ function ChatButton({ node, testID }: { node: MessageNode<string>, testID?: stri
       paddingHorizontal: 20,
     },
     popoverButton: {
+      ...typography.bodyLarge,
       color: colorScheme.onSurface,
-      fontSize: 16,
     },
     popoverButtonDestructive: {
       color: colorScheme.error,
