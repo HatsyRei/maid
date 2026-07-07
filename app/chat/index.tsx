@@ -256,21 +256,26 @@ function Chat() {
     scrollIndicatorContainer: {
       position: "absolute",
       top: 0,
-      right: 0,
+      // Counteract the page's 8px padding so the indicator reaches the
+      // physical right edge of the screen.
+      right: -8,
       bottom: 0,
-      width: 32,
+      // Wide, transparent hit area so the thumb stays easy to grab even
+      // though the visible pill is flush against the edge.
+      width: 44,
       pointerEvents: "box-none",
     },
     scrollThumb: {
       position: "absolute",
       right: 0,
-      width: 24,
-      paddingRight: 6,
+      width: 44,
+      // Keep the visible pill pinned to the right edge while the rest of
+      // the row remains an invisible drag target.
       alignItems: "flex-end",
     },
     scrollThumbVisual: {
-      width: 6,
-      borderRadius: 3,
+      width: 4,
+      borderRadius: 2,
       opacity: 0.9,
     },
   }), [colorScheme]);
