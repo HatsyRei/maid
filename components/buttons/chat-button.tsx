@@ -1,5 +1,6 @@
 import Popover from "@/components/views/popover-view";
 import { useChat, useDialog, useSystem } from "@/context";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import * as FileSystem from "expo-file-system";
 import { deleteNode, getRootMapping, MessageNode, updateContent } from "message-nodes";
 import { useEffect, useRef, useState } from "react";
@@ -91,11 +92,20 @@ function ChatButton({ node, testID }: { node: MessageNode<string>, testID?: stri
     buttonTextActive: {
       color: colorScheme.primary
     },
+    popoverItem: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      gap: 20,
+      paddingVertical: 14,
+      paddingHorizontal: 20,
+    },
     popoverButton: {
-      paddingVertical: 8,
-      paddingHorizontal: 12,
       color: colorScheme.onSurface,
       fontSize: 16,
+    },
+    popoverButtonDestructive: {
+      color: colorScheme.error,
     },
   });
     
@@ -136,30 +146,36 @@ function ChatButton({ node, testID }: { node: MessageNode<string>, testID?: stri
         position="bottom"
         anchor={anchor}
         offset={{ y: (anchor?.height ?? 0) }}
-        width={120}
+        width={220}
         visible={visible}
         onClose={() => setVisible(false)}
       >
         <TouchableOpacity
           testID={`${testID}-rename`}
+          style={styles.popoverItem}
           onPress={() => {
             setVisible(false);
             setRename(true);
           }}
         >
           <Text style={styles.popoverButton}>Rename</Text>
+          <MaterialIcons name="edit" size={20} color={colorScheme.onSurfaceVariant} />
         </TouchableOpacity>
         <TouchableOpacity
           testID={`${testID}-export`}
+          style={styles.popoverItem}
           onPress={exportChat}
         >
           <Text style={styles.popoverButton}>Export</Text>
+          <MaterialIcons name="file-download" size={20} color={colorScheme.onSurfaceVariant} />
         </TouchableOpacity>
         <TouchableOpacity
           testID={`${testID}-delete`}
+          style={styles.popoverItem}
           onPress={confirmDeleteChat}
         >
-          <Text style={styles.popoverButton}>Delete</Text>
+          <Text style={[styles.popoverButton, styles.popoverButtonDestructive]}>Delete</Text>
+          <MaterialIcons name="delete" size={20} color={colorScheme.error} />
         </TouchableOpacity>
       </Popover>
     </>
