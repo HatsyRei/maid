@@ -11,6 +11,7 @@ function BaseUrlField() {
   const { alert } = useDialog();
   const [scanning, setScanning] = useState(false);
   const [foundURL, setFoundURL] = useState<string | undefined>(undefined);
+  const [selection, setSelection] = useState<{ start: number; end: number } | undefined>({ start: 0, end: 0 });
   const scanningRef = useRef(false);
 
   const styles = StyleSheet.create({
@@ -83,6 +84,9 @@ function BaseUrlField() {
         underlineColorAndroid="transparent"
         value={baseURL}
         onChangeText={setBaseURL}
+        selection={selection}
+        onFocus={() => setSelection(undefined)}
+        onBlur={() => setSelection({ start: 0, end: 0 })}
       />
       <TouchableOpacity
         testID="find-endpoint-button"

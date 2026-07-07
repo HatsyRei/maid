@@ -82,16 +82,23 @@ function ChatButton({ node, testID }: { node: MessageNode<string>, testID?: stri
       flexDirection: "column"
     },
     button: {
-      paddingVertical: 12,
-      paddingHorizontal: 18,
-      width: "100%",
+      minHeight: 48,
+      justifyContent: "center",
+      paddingVertical: 10,
+      paddingHorizontal: 16,
+      marginHorizontal: 12,
+      marginVertical: 2,
+      borderRadius: 28,
+    },
+    buttonActive: {
+      backgroundColor: colorScheme.secondaryContainer,
     },
     buttonText: {
-      ...typography.bodyLarge,
-      color: colorScheme.onSurface,
+      ...typography.labelLarge,
+      color: colorScheme.onSurfaceVariant,
     },
     buttonTextActive: {
-      color: colorScheme.primary
+      color: colorScheme.onSecondaryContainer,
     },
     popoverItem: {
       flexDirection: "row",
@@ -115,7 +122,10 @@ function ChatButton({ node, testID }: { node: MessageNode<string>, testID?: stri
       {!rename && <TouchableOpacity
         testID={testID}
         key={`${node.id}-button`}
-        style={styles.button}
+        style={[
+          styles.button,
+          root === node.id ? styles.buttonActive : null
+        ]}
         onPress={() => setRoot(node.id)}
         onLongPress={open}
       >
@@ -134,8 +144,9 @@ function ChatButton({ node, testID }: { node: MessageNode<string>, testID?: stri
         testID={`${testID}-textfield`}
         key={`${node.id}-textfield`}
         style={[
-          styles.button, 
-          styles.buttonText, 
+          styles.button,
+          styles.buttonText,
+          root === node.id ? styles.buttonActive : null,
           root === node.id ? styles.buttonTextActive : null
         ]}
         defaultValue={node.metadata?.title || "New Chat"}
