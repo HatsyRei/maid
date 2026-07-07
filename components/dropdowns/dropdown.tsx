@@ -1,5 +1,5 @@
-import { MaterialIconButton } from "@/components/buttons/icon-button";
 import { useSystem } from "@/context";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import React, { Fragment, useRef, useState } from "react";
 import {
   Dimensions,
@@ -26,7 +26,7 @@ interface DropdownProps<T> {
   equalityFn?: (a: T, b: T) => boolean;
 }
 
-const POPOVER_MIN_WIDTH = 180;
+const POPOVER_MIN_WIDTH = 220;
 const POPOVER_VERT_GAP = 8;
 const POPOVER_MAX_HEIGHT = 400;
 
@@ -65,17 +65,21 @@ function Dropdown<T>({
     root: {
       flexDirection: "row",
       alignItems: "center",
+      alignSelf: "flex-start",
+      backgroundColor: colorScheme.secondaryContainer,
+      borderRadius: 20,
+      paddingLeft: 16,
+      paddingRight: 6,
+      paddingVertical: 6,
     },
     label: {
-      color: colorScheme.onSurface,
+      color: colorScheme.onSecondaryContainer,
       fontSize: 14,
       flexShrink: 1,
-      textOverflow: "ellipsis",
-      maxWidth: 140,
+      maxWidth: 160,
     },
-    caret: { 
-      paddingHorizontal: 6, 
-      paddingVertical: 2 
+    caret: {
+      marginLeft: 2,
     },
     overlay: { 
       flex: 1, 
@@ -84,17 +88,24 @@ function Dropdown<T>({
     popover: {
       position: "absolute",
       backgroundColor: colorScheme.surfaceVariant,
-      borderRadius: 12,
-      paddingVertical: 6,
-      maxHeight: POPOVER_MAX_HEIGHT,
+      borderRadius: 16,
+      paddingVertical: 8,
+      elevation: 6,
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.2,
+      shadowRadius: 8,
     },
-    itemBtn: { 
-      paddingVertical: 10, 
-      paddingHorizontal: 12 
+    itemBtn: {
+      paddingVertical: 14,
+      paddingHorizontal: 20,
     },
-    itemText: { 
-      color: colorScheme.onSurface, 
-      fontSize: 14 
+    itemText: {
+      color: colorScheme.onSurface,
+      fontSize: 14,
+    },
+    itemTextSelected: {
+      color: colorScheme.primary,
     },
   });
 
@@ -102,20 +113,17 @@ function Dropdown<T>({
   const popoverStyle = (() => {
     const screen = Dimensions.get("window");
     if (!anchor) {
-      return { bottom: 0, left: 0, width: POPOVER_MIN_WIDTH };
+      return { bottom: 0, left: 0, width: POPOVER_MIN_WIDTH, maxHeight: POPOVER_MAX_HEIGHT };
     }
     const width = Math.max(POPOVER_MIN_WIDTH, anchor.width);
     let left = anchor.x + anchor.width / 2 - width / 2;
     left = Math.max(8, Math.min(left, screen.width - width - 8));
 
-    // prefer below; if not enough space, put above
-    let top = anchor.y + anchor.height + POPOVER_VERT_GAP;
-    if (top + POPOVER_MAX_HEIGHT > screen.height) {
-      top = anchor.y - POPOVER_MAX_HEIGHT - POPOVER_VERT_GAP;
-    }
-    top = Math.max(8, Math.min(top, screen.height - POPOVER_MAX_HEIGHT - 8));
+    // Always sit directly below the pill; cap height to the available space.
+    const top = anchor.y + anchor.height + POPOVER_VERT_GAP;
+    const maxHeight = Math.min(POPOVER_MAX_HEIGHT, screen.height - top - 8);
 
-    return { top, left, width };
+    return { top, left, width, maxHeight };
   })();
 
   const Popover = (
@@ -124,29 +132,39 @@ function Dropdown<T>({
       visible={open}
       animationType="fade"
       onRequestClose={closeMenu}
-      statusBarTranslucent
     >
       <TouchableWithoutFeedback onPress={closeMenu}>
         <View style={styles.overlay}>
           <TouchableWithoutFeedback>
             <ScrollView style={[styles.popover, popoverStyle]}>
-              {items.map((item, idx) => (
-                <Fragment key={`${item.label}-${idx}`}>
-                  <TouchableOpacity
-                    style={styles.itemBtn}
-                    onPress={() => {
-                      onValueChange(item.value);
-                      closeMenu();
-                    }}
-                  >
-                    {typeof item.label === "string" ? (
-                      <Text style={styles.itemText}>{item.label}</Text>
-                    ) : (
-                      item.label
-                    )}
-                  </TouchableOpacity>
-                </Fragment>
-              ))}
+              {items.map((item, idx) => {
+                const selected = equalityFn
+                  ? equalityFn(item.value, selectedValue)
+                  : item.value == selectedValue;
+                return (
+                  <Fragment key={`${item.label}-${idx}`}>
+                    <TouchableOpacity
+                      style={styles.itemBtn}
+                      onPress={() => {
+                        onValueChange(item.value);
+                        closeMenu();
+                      }}
+                    >
+                      {typeof item.label === "string" ? (
+                        <Text
+                          style={[styles.itemText, selected && styles.itemTextSelected]}
+                          numberOfLines={1}
+                          ellipsizeMode="tail"
+                        >
+                          {item.label}
+                        </Text>
+                      ) : (
+                        item.label
+                      )}
+                    </TouchableOpacity>
+                  </Fragment>
+                );
+              })}
             </ScrollView>
           </TouchableWithoutFeedback>
         </View>
@@ -160,21 +178,21 @@ function Dropdown<T>({
 
   return (
     <View ref={rootRef} style={styles.rootWrapper} collapsable={false}>
-      <View style={styles.root}>
+      <TouchableOpacity style={styles.root} onPress={openMenu} activeOpacity={0.7}>
         {typeof selectedItem?.selectedLabel === "string" ? (
-          <Text style={styles.label} numberOfLines={1}>
+          <Text style={styles.label} numberOfLines={1} ellipsizeMode="tail">
             {selectedItem.selectedLabel}
           </Text>
         ) : (
           selectedItem?.selectedLabel
         )}
-        <MaterialIconButton
-          icon={open ? "arrow-drop-up" : "arrow-drop-down"}
-          size={30}
+        <MaterialIcons
+          name={open ? "arrow-drop-up" : "arrow-drop-down"}
+          size={24}
+          color={colorScheme.onSecondaryContainer}
           style={styles.caret}
-          onPress={openMenu}
         />
-      </View>
+      </TouchableOpacity>
       {open && Popover}
     </View>
   );
