@@ -1,13 +1,14 @@
 import Popover from "@/components/views/popover-view";
-import { useChat, useSystem } from "@/context";
+import { useChat, useDialog, useSystem } from "@/context";
 import * as FileSystem from "expo-file-system";
 import { deleteNode, getRootMapping, MessageNode, updateContent } from "message-nodes";
 import { useEffect, useRef, useState } from "react";
-import { Alert, LayoutRectangle, StyleSheet, Text, TextInput, TouchableOpacity } from "react-native";
+import { LayoutRectangle, StyleSheet, Text, TextInput, TouchableOpacity } from "react-native";
 
 function ChatButton({ node, testID }: { node: MessageNode<string>, testID?: string }) {
   const { root, setRoot, mappings, setMappings } = useChat();
   const { colorScheme } = useSystem();
+  const { alert } = useDialog();
   const [visible, setVisible] = useState<boolean>(false);
   const [rename, setRename] = useState<boolean>(false);
   const [renameEvent, setRenameEvent] = useState<string>("");
@@ -64,7 +65,7 @@ function ChatButton({ node, testID }: { node: MessageNode<string>, testID?: stri
 
   const confirmDeleteChat = () => {
     setVisible(false);
-    Alert.alert(
+    alert(
       "Delete conversation",
       `Are you sure you want to delete "${node.metadata?.title || "New Chat"}"? This action cannot be undone.`,
       [

@@ -1,4 +1,4 @@
-import { useLLM, useSystem } from "@/context";
+import { useLLM, useDialog, useSystem } from "@/context";
 import { normalizeBaseUrl, scanForEndpoint, validateEndpoint } from "@/utilities/scan-endpoint";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useRef, useState } from "react";
@@ -7,6 +7,7 @@ import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
 function BaseUrlField() {
   const { baseURL, setBaseURL } = useLLM();
   const { colorScheme } = useSystem();
+  const { alert } = useDialog();
   const [scanning, setScanning] = useState(false);
   const [foundURL, setFoundURL] = useState<string | undefined>(undefined);
   const scanningRef = useRef(false);
@@ -64,7 +65,7 @@ function BaseUrlField() {
         setBaseURL(found);
         setFoundURL(found);
       } else {
-        alert("Could not find an OpenAI-compatible endpoint on the local network.");
+        alert("No endpoint found", "Could not find an OpenAI-compatible endpoint on the local network.");
       }
     } finally {
       scanningRef.current = false;

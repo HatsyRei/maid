@@ -1,6 +1,6 @@
 
 import DefaultHeader from '@/components/layout/default-header';
-import { ChatContextProvider, LanguageModelProvider, SystemContextProvider, useSystem } from "@/context";
+import { ChatContextProvider, DialogContextProvider, LanguageModelProvider, SystemContextProvider, useSystem } from "@/context";
 import { NativeStackHeaderProps } from "@react-navigation/native-stack";
 import { Buffer } from "buffer";
 import { Stack } from "expo-router";
@@ -15,7 +15,9 @@ function RootLayout() {
     <SystemContextProvider>
       <LanguageModelProvider>
         <ChatContextProvider>
-          <RootLayoutContent />
+          <DialogContextProvider>
+            <RootLayoutContent />
+          </DialogContextProvider>
         </ChatContextProvider>
       </LanguageModelProvider>
     </SystemContextProvider>

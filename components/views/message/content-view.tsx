@@ -1,5 +1,5 @@
 import { MaterialIconButton } from "@/components/buttons/icon-button";
-import { useChat, useLLM, useSystem } from "@/context";
+import { useChat, useDialog, useLLM, useSystem } from "@/context";
 import getMetadata from "@/utilities/metadata";
 import splitReasoning from "@/utilities/reasoning";
 import { createStreamWriter } from "@/utilities/stream-writer";
@@ -8,7 +8,7 @@ import { randomUUID } from "expo-crypto";
 import { Image, type ImageLoadEventData } from "expo-image";
 import { addNode, branchNode, getConversation, MessageNode, updateContent } from "message-nodes";
 import { memo, useEffect, useMemo, useState } from "react";
-import { Alert, StyleSheet, Text, TextInput, TouchableHighlight, View } from "react-native";
+import { StyleSheet, Text, TextInput, TouchableHighlight, View } from "react-native";
 
 // The markdown library's default image style is `{ flex: 1 }` with no height,
 // so a bare ![](url) collapses to zero height and never appears. Render images
@@ -36,6 +36,7 @@ function MessageContentView({ message }: { message: MessageNode }) {
   const [ editText, setEditText ] = useState<string>(message.content);
   const { mappings, setMappings, editing, setEditing } = useChat();
   const { colorScheme } = useSystem();
+  const { alert } = useDialog();
   const LLM = useLLM();
 
   // Keep the edit buffer in sync with the message content whenever this message
@@ -127,7 +128,7 @@ function MessageContentView({ message }: { message: MessageNode }) {
 
   const onEdit = () => {
     if (!message.root) {
-      Alert.alert("Error", "Cannot edit this message because its conversation root is missing.");
+      alert("Error", "Cannot edit this message because its conversation root is missing.");
       return;
     }
 
@@ -169,7 +170,7 @@ function MessageContentView({ message }: { message: MessageNode }) {
       const writer = createStreamWriter(setMappings, responseId);
       LLM.prompt(getConversation(next, message.root), writer.push).finally(writer.flush);
     } catch (error) {
-      Alert.alert(
+      alert(
         "Edit failed",
         "There was a problem requesting an updated response. Please try again."
       );
