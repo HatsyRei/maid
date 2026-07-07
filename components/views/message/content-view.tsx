@@ -95,7 +95,11 @@ function MessageContentView({ message }: { message: MessageNode }) {
   const markdownStyle = useMemo(() => StyleSheet.create({
     body: {
       ...typography.bodyMedium,
+      lineHeight: undefined,
       color: colorScheme.onSurface,
+    },
+    paragraph: {
+      lineHeight: typography.bodyMedium.lineHeight,
     },
     link: {
       color: colorScheme.primary,
