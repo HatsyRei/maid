@@ -104,7 +104,7 @@ function ChatButton({ node, testID }: { node: MessageNode<string>, testID?: stri
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
-      gap: 20,
+      gap: 12,
       paddingVertical: 14,
       paddingHorizontal: 20,
     },
@@ -158,7 +158,7 @@ function ChatButton({ node, testID }: { node: MessageNode<string>, testID?: stri
         position="bottom"
         anchor={anchor}
         offset={{ y: (anchor?.height ?? 0) }}
-        width={220}
+        width={160}
         visible={visible}
         onClose={() => setVisible(false)}
       >
