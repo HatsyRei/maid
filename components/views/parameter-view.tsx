@@ -11,23 +11,21 @@ function ParameterView() {
 
   const styles = StyleSheet.create({
     container: {
-      flexDirection: "column",
-      justifyContent: "flex-start",
-      alignItems: "center",
-      marginTop: 16
+      backgroundColor: colorScheme.surfaceVariant,
+      borderRadius: 24,
+      padding: 16,
+      gap: 8,
     },
     titleRow: {
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
       width: "100%",
-      marginBottom: 8
     },
     title: {
-      color: colorScheme.primary,
+      color: colorScheme.onSurfaceVariant,
       fontSize: 14,
       fontWeight: "bold",
-      marginLeft: 8
     },
   });
 
@@ -54,16 +52,8 @@ function ParameterView() {
         <MaterialIconButton
           icon="add"
           size={24}
-          color={colorScheme.onPrimary}
-          style={{
-            width: 48,
-            height: 48,
-            borderRadius: 24,
-            margin: 0,
-            backgroundColor: colorScheme.primary,
-            justifyContent: "center",
-            alignItems: "center",
-          }}
+          color={colorScheme.onSurfaceVariant}
+          style={{ margin: 0 }}
           onPress={addParameter}
         />
       </View>
@@ -112,19 +102,20 @@ function ParameterViewItem(props: ParameterViewItemProps) {
   const styles = StyleSheet.create({
     container: {
       flexDirection: "row",
-      justifyContent: "space-evenly",
       alignItems: "center",
+      gap: 8,
       paddingVertical: 4,
       width: "100%"
     },
     input: {
       color: colorScheme.onSurface,
-      backgroundColor: colorScheme.surfaceVariant,
-      borderRadius: 30,
+      borderColor: colorScheme.outline,
+      borderWidth: 1,
+      borderRadius: 8,
       fontSize: 16,
       height: 48,
       paddingHorizontal: 16,
-      width: "40%",
+      flex: 1,
     }
   });
 
@@ -163,21 +154,22 @@ function ParameterViewItem(props: ParameterViewItemProps) {
       <TextInput
         style={styles.input}
         placeholder="Key"
-        placeholderTextColor={colorScheme.onSurface}
+        placeholderTextColor={colorScheme.onSurfaceVariant}
         value={key}
         onChangeText={setKey}
       />
       <TextInput
         style={styles.input}
         placeholder="Value"
-        placeholderTextColor={colorScheme.onSurface}
+        placeholderTextColor={colorScheme.onSurfaceVariant}
         value={value}
         onChangeText={updateParameter}
       />
       <MaterialIconButton
         icon="delete"
         size={24}
-        color={colorScheme.primary}
+        color={colorScheme.onSurfaceVariant}
+        style={{ margin: 0 }}
         onPress={props.onDelete}
       />
     </View>
