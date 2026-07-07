@@ -82,6 +82,14 @@ function MessageContentView({ message }: { message: MessageNode }) {
       color: colorScheme.onSurface,
       paddingHorizontal: 0,
     },
+    editInput: {
+      ...typography.bodyMedium,
+      color: colorScheme.onSurface,
+      paddingHorizontal: 0,
+      width: "100%",
+      minHeight: 48,
+      textAlignVertical: "top",
+    },
   }), [colorScheme]);
 
   const markdownStyle = useMemo(() => StyleSheet.create({
@@ -200,10 +208,11 @@ function MessageContentView({ message }: { message: MessageNode }) {
     return (
       <View style={styles.view}>
         <TextInput
-          style={styles.content}
+          style={styles.editInput}
           value={editText}
           onChangeText={(text) => setEditText(text)}
           multiline
+          autoFocus
         />
         <View
           style={styles.controls}
