@@ -4,8 +4,8 @@ import { typography } from "@/utilities/typography";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import * as FileSystem from "expo-file-system";
 import { deleteNode, getRootMapping, MessageNode, updateContent } from "message-nodes";
-import { useEffect, useRef, useState } from "react";
-import { LayoutRectangle, StyleSheet, Text, TextInput, TouchableOpacity } from "react-native";
+import { useEffect, useState } from "react";
+import { GestureResponderEvent, LayoutRectangle, StyleSheet, Text, TextInput, TouchableOpacity } from "react-native";
 
 function ChatButton({ node, testID }: { node: MessageNode<string>, testID?: string }) {
   const { root, setRoot, mappings, setMappings } = useChat();
@@ -15,7 +15,6 @@ function ChatButton({ node, testID }: { node: MessageNode<string>, testID?: stri
   const [rename, setRename] = useState<boolean>(false);
   const [renameEvent, setRenameEvent] = useState<string>("");
   const [anchor, setAnchor] = useState<LayoutRectangle | null>(null);
-  const anchorRef = useRef<Text>(null);
 
   useEffect(() => {
     if (!rename) return;
@@ -25,11 +24,12 @@ function ChatButton({ node, testID }: { node: MessageNode<string>, testID?: stri
     return () => clearTimeout(timeout);
   }, [rename, renameEvent]);
 
-  const open = () => {
-    anchorRef.current?.measureInWindow((x, y, width, height) => {
-      setAnchor({ x, y, width, height });
-      setVisible(true);
-    });
+  const open = (e: GestureResponderEvent) => {
+    const { pageX, pageY } = e.nativeEvent;
+    // Anchor a zero-size rect at the touch point so the menu appears where
+    // the user long-pressed rather than relative to the whole button row.
+    setAnchor({ x: pageX, y: pageY, width: 0, height: 0 });
+    setVisible(true);
   };
 
   const renameChat = (title: string) => {
@@ -130,7 +130,6 @@ function ChatButton({ node, testID }: { node: MessageNode<string>, testID?: stri
         onLongPress={open}
       >
         <Text
-          ref={anchorRef}
           style={[
             styles.buttonText,
             root === node.id ? styles.buttonTextActive : null
@@ -155,9 +154,8 @@ function ChatButton({ node, testID }: { node: MessageNode<string>, testID?: stri
         autoFocus
       />}
       <Popover
-        position="bottom"
+        position="center"
         anchor={anchor}
-        offset={{ y: (anchor?.height ?? 0) }}
         width={160}
         visible={visible}
         onClose={() => setVisible(false)}
