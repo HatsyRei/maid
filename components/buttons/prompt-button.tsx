@@ -1,6 +1,5 @@
 import { MaterialIconButton } from "@/components/buttons/icon-button";
 import { useChat, useLLM, useSystem } from "@/context";
-import getMetadata from "@/utilities/metadata";
 import { createStreamWriter } from "@/utilities/stream-writer";
 import { randomUUID } from "expo-crypto";
 import { addNode, getConversation } from "message-nodes";
@@ -35,30 +34,16 @@ function PromptButton({ promptText, setPromptText }: PromptButtonProps) {
         parent,
         undefined,
         undefined,
-        { title: "New Chat", ...getMetadata() }
+        { title: "New Chat" }
       );
     }
 
     const id = randomUUID();
-    next = addNode<string>(next, id, "user", promptText, root || parent, parent, undefined, getMetadata());
+    next = addNode<string>(next, id, "user", promptText, root || parent, parent);
     setPromptText("");
 
     const responseId = randomUUID();
-    next = addNode<string>(
-      next,
-      responseId,
-      "assistant",
-      "",
-      root || parent,
-      id,
-      undefined,
-      {
-        ...getMetadata(),
-        ...LLM.parameters,
-        provider: LLM.type.toLowerCase().replace(" ", "-"),
-        model: LLM.model,
-      }
-    );
+    next = addNode<string>(next, responseId, "assistant", "", root || parent, id);
 
     setMappings(next);
     setRoot(root || parent);

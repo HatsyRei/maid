@@ -1,7 +1,6 @@
 import { MaterialIconButton } from "@/components/buttons/icon-button";
 import { useSystem } from "@/context";
 import { NativeStackHeaderProps } from "@react-navigation/native-stack";
-import * as Application from "expo-application";
 import { StyleSheet, Text, View } from "react-native";
 import { typography } from "@/utilities/typography";
 
@@ -28,11 +27,6 @@ function DefaultHeader(props: NativeStackHeaderProps) {
       flex: 1,
       color: colorScheme.onSurface,
     },
-    version: {
-      ...typography.bodySmall,
-      color: colorScheme.outline,
-      marginRight: 16,
-    }
   });
 
   const getTitle = () => {
@@ -63,11 +57,6 @@ function DefaultHeader(props: NativeStackHeaderProps) {
       >
         {getTitle()}
       </Text>
-      {props.route.name === "settings" && (
-        <Text style={styles.version}>
-          v{Application.nativeApplicationVersion}
-        </Text>
-      )}
     </View>
   );
 }

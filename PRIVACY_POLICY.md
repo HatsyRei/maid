@@ -11,14 +11,6 @@ The Application collects information when you download and use it. This informat
 - Your device's Internet Protocol address (e.g. IP address)
 - App usage information, such as the pages/screens of the Application that you visit, the time and date of your visit, and the time spent on those pages/screens
 - The time spent on the Application
-- Device and app diagnostics information, such as:
-  - Application version and build number (e.g., `appVersion`, `appBuild`)
-  - Device model (e.g., `device`)
-  - Operating system version and build identifiers (e.g., `osVersion`, `osBuildId`)
-  - CPU / supported architectures (e.g., `cpu`)
-  - Device memory size (e.g., `ram`)
-  - Event timestamps related to actions in the app (e.g., `createTime`)
-- AI configuration metadata, such as which AI provider type is selected and which model is used (e.g., `provider`, `model`), for reliability, debugging, and improving the Application
 
 The Service Provider uses this information to operate, maintain, improve, and secure the Application, including diagnosing crashes or performance issues, and understanding overall usage patterns.
 

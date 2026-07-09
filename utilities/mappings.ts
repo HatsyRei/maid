@@ -28,8 +28,6 @@ export function validateMappings(mappings: Record<string, MessageNode<string>>):
       child: root.child,
       metadata: {
         title: "New Chat",
-        createTime: new Date().toISOString(),
-        updateTime: new Date().toISOString(),
       }
     };
 

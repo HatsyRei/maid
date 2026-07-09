@@ -1,7 +1,6 @@
 import ChatButton from "@/components/buttons/chat-button";
 import { MaterialIconButton } from "@/components/buttons/icon-button";
 import { useChat, useSystem } from "@/context";
-import getMetadata from "@/utilities/metadata";
 import { validateMappings } from "@/utilities/mappings";
 import { typography } from "@/utilities/typography";
 import { randomUUID } from "expo-crypto";
@@ -76,7 +75,7 @@ function DrawerContent({ navigation }: { navigation?: { closeDrawer: () => void 
       id,
       undefined,
       undefined,
-      { title: "New Chat", ...getMetadata() }
+      { title: "New Chat" }
     ));
     setRoot(id);
   };

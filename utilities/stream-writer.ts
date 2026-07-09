@@ -14,12 +14,7 @@ export function createStreamWriter(setMappings: SetMappings, responseId: string,
   let timer: ReturnType<typeof setTimeout> | null = null;
 
   const commit = () => {
-    setMappings((prev) =>
-      updateContent(prev, responseId, buffer, (meta) => ({
-        ...meta,
-        updateTime: new Date().toISOString(),
-      }))
-    );
+    setMappings((prev) => updateContent(prev, responseId, buffer));
   };
 
   return {

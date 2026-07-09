@@ -1,6 +1,5 @@
 import { MaterialIconButton } from "@/components/buttons/icon-button";
 import { useChat, useLLM, useSystem } from "@/context";
-import getMetadata from "@/utilities/metadata";
 import { createStreamWriter } from "@/utilities/stream-writer";
 import { typography } from "@/utilities/typography";
 import { randomUUID } from "expo-crypto";
@@ -27,18 +26,7 @@ function MessageControlsView({ message }: { message: MessageNode }) {
 
   const onRegenerate = () => {
     const responseId = randomUUID();
-    const next = branchNode<string>(
-      mappings,
-      message.id,
-      responseId,
-      "",
-      {
-        ...getMetadata(),
-        ...LLM.parameters,
-        provider: LLM.type.toLowerCase().replace(" ", "-"),
-        model: LLM.model,
-      }
-    );
+    const next = branchNode<string>(mappings, message.id, responseId, "");
 
     setMappings(next);
 

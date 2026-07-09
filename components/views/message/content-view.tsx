@@ -1,6 +1,5 @@
 import { MaterialIconButton } from "@/components/buttons/icon-button";
 import { useChat, useDialog, useLLM, useSystem } from "@/context";
-import getMetadata from "@/utilities/metadata";
 import splitReasoning from "@/utilities/reasoning";
 import { createStreamWriter } from "@/utilities/stream-writer";
 import { typography } from "@/utilities/typography";
@@ -156,26 +155,11 @@ function MessageContentView({ message }: { message: MessageNode }) {
       mappings, 
       message.id,
       id,
-      editText,
-      getMetadata()
+      editText
     );
 
     const responseId = randomUUID();
-    next = addNode<string>(
-      next,
-      responseId,
-      "assistant",
-      "",
-      message.root,
-      id,
-      undefined,
-      {
-        ...getMetadata(),
-        ...LLM.parameters,
-        provider: LLM.type.toLowerCase().replace(" ", "-"),
-        model: LLM.model,
-      }
-    );
+    next = addNode<string>(next, responseId, "assistant", "", message.root, id);
 
     setMappings(next);
 
