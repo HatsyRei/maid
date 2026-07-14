@@ -12,12 +12,11 @@ function MessageRoleView({ message }: { message: MessageNode }) {
     row: {
       flexDirection: "row",
       alignItems: "center",
-      gap: 8
+      gap: 8,
     },
     role: {
       ...typography.titleMedium,
       color: colorScheme.primary,
-      marginLeft: 8,
     },
   }), [colorScheme]);
 

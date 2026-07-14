@@ -16,6 +16,7 @@ function MessageControlsView({ message }: { message: MessageNode }) {
     row: {
       flexDirection: "row",
       alignItems: "center",
+      marginLeft: "auto",
     },
     counter: {
       ...typography.bodyMedium,

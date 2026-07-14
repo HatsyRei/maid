@@ -12,18 +12,20 @@ const styles = StyleSheet.create({
     marginVertical: 12,
     marginHorizontal: 4,
   },
-  mainRow: {
+  headerRow: {
     flexDirection: "row",
-    marginBottom: 8,
-    justifyContent: "space-between",
+    flexWrap: "wrap",
+    alignItems: "center",
     width: "100%",
-  }
+    rowGap: 8,
+    marginBottom: 8,
+  },
 });
 
 function MessageView({ message }: { message: MessageNode }) {
   return (
     <View style={styles.view}>
-      <View style={styles.mainRow}>
+      <View style={styles.headerRow}>
         <MessageRoleView message={message} />
         <MessageControlsView message={message} />
       </View>
