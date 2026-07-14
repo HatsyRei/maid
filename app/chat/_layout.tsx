@@ -11,6 +11,8 @@ function ChatLayout() {
     <Drawer
       screenOptions={{
         header: (props: DrawerHeaderProps) => <Header {...props} />,
+        swipeEnabled: true,
+        swipeEdgeWidth: 9999,
         drawerStyle: {
           backgroundColor: `${colorScheme.surface}f0`
         },
