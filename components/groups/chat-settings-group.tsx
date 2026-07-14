@@ -1,6 +1,7 @@
+import TextField from "@/components/fields/text-field";
 import { useSystem } from "@/context";
 import { typography } from "@/utilities/typography";
-import { StyleSheet, Text, TextInput, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
 function ChatSettingsGroup() {
   const {
@@ -14,64 +15,40 @@ function ChatSettingsGroup() {
   } = useSystem();
 
   const styles = StyleSheet.create({
-    view: {
+    card: {
+      backgroundColor: colorScheme.surfaceContainerLow,
+      borderRadius: 24,
+      padding: 16,
+      gap: 16,
       alignItems: "stretch",
-      gap: 12,
-      paddingHorizontal: 16,
-      marginTop: 40,
     },
     title: {
       ...typography.titleSmall,
       color: colorScheme.primary,
-      alignSelf: "flex-start",
-      marginBottom: 8,
-      marginLeft: 8,
-    },
-    input: {
-      ...typography.bodyLarge,
-      color: colorScheme.onSurface,
-      backgroundColor: colorScheme.surfaceVariant,
-      borderRadius: 30,
-      paddingHorizontal: 16,
-      width: "100%",
-    },
-    singleLine: {
-      height: 48,
-    },
-    multiline: {
-      minHeight: 96,
-      paddingVertical: 12,
-      borderRadius: 20,
-      textAlignVertical: "top",
+      marginTop: 8,
+      marginLeft: 16,
+      marginBottom: 12,
     },
   });
 
   return (
-    <View style={styles.view}>
+    <View style={styles.card}>
       <Text style={styles.title}>Chat Settings</Text>
-      <TextInput
-        style={[styles.input, styles.singleLine]}
-        placeholder="Username"
-        placeholderTextColor={colorScheme.onSurfaceVariant}
-        underlineColorAndroid="transparent"
+      <TextField
+        label="Username"
         value={userName}
         onChangeText={setUserName}
       />
-      <TextInput
-        style={[styles.input, styles.singleLine]}
-        placeholder="Assistant name"
-        placeholderTextColor={colorScheme.onSurfaceVariant}
-        underlineColorAndroid="transparent"
+      <TextField
+        label="Assistant name"
         value={assistantName}
         onChangeText={setAssistantName}
       />
-      <TextInput
-        style={[styles.input, styles.multiline]}
-        placeholder="System Prompt"
-        placeholderTextColor={colorScheme.onSurfaceVariant}
-        underlineColorAndroid="transparent"
+      <TextField
+        label="System Prompt"
         value={systemPrompt}
         onChangeText={setSystemPrompt}
+        containerStyle={{ minHeight: 112 }}
         multiline
       />
     </View>

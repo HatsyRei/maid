@@ -12,10 +12,11 @@ function HeaderView() {
 
   const styles = StyleSheet.create({
     container: {
-      backgroundColor: colorScheme.surfaceVariant,
-      borderRadius: 24,
-      padding: 16,
       gap: 8,
+      paddingTop: 16,
+      marginTop: 4,
+      borderTopWidth: 1,
+      borderTopColor: colorScheme.outlineVariant,
     },
     titleRow: {
       flexDirection: "row",
@@ -26,6 +27,7 @@ function HeaderView() {
     title: {
       ...typography.titleSmall,
       color: colorScheme.onSurfaceVariant,
+      marginLeft: 16,
     },
   });
 
@@ -55,7 +57,7 @@ function HeaderView() {
           icon="add"
           size={24}
           color={colorScheme.onSurfaceVariant}
-          style={{ margin: 0 }}
+          style={{ margin: 0, padding: 12 }}
           onPress={addHeader}
         />
       </View>
@@ -155,7 +157,7 @@ function HeaderViewItem(props: HeaderViewItemProps) {
         icon="delete"
         size={24}
         color={colorScheme.onSurfaceVariant}
-        style={{ margin: 0 }}
+        style={{ margin: 0, padding: 12 }}
         onPress={props.onDelete}
       />
     </View>

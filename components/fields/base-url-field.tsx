@@ -1,9 +1,9 @@
+import TextField from "@/components/fields/text-field";
 import { useLLM, useDialog, useSystem } from "@/context";
-import { typography } from "@/utilities/typography";
 import { normalizeBaseUrl, scanForEndpoint, validateEndpoint } from "@/utilities/scan-endpoint";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useRef, useState } from "react";
-import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 
 function BaseUrlField() {
   const { baseURL, setBaseURL } = useLLM();
@@ -21,20 +21,11 @@ function BaseUrlField() {
       gap: 8,
       width: "100%",
     },
-    input: {
-      ...typography.bodyLarge,
-      color: colorScheme.onSurface,
-      backgroundColor: colorScheme.surfaceVariant,
-      borderRadius: 30,
-      height: 48,
-      paddingHorizontal: 16,
-      flex: 1,
-    },
     iconButton: {
-      backgroundColor: colorScheme.primary,
-      borderRadius: 24,
-      width: 48,
-      height: 48,
+      backgroundColor: colorScheme.secondaryContainer,
+      borderRadius: 28,
+      width: 56,
+      height: 56,
       alignItems: "center",
       justifyContent: "center",
     },
@@ -77,32 +68,34 @@ function BaseUrlField() {
 
   return (
     <View style={styles.row}>
-      <TextInput
-        style={styles.input}
-        placeholder="Base URL"
-        placeholderTextColor={colorScheme.onSurface}
-        underlineColorAndroid="transparent"
+      <TextField
+        label="Base URL"
+        containerStyle={{ flex: 1 }}
         value={baseURL}
         onChangeText={setBaseURL}
+        autoCapitalize="none"
+        autoCorrect={false}
+        keyboardType="url"
         selection={selection}
         onFocus={() => setSelection(undefined)}
         onBlur={() => setSelection({ start: 0, end: 0 })}
       />
-      <TouchableOpacity
+      <Pressable
         testID="find-endpoint-button"
         style={[
           styles.iconButton,
-          { backgroundColor: disabled ? colorScheme.surfaceVariant : colorScheme.primary },
+          disabled && { backgroundColor: `${colorScheme.onSurface}1F` },
         ]}
         onPress={onScan}
         disabled={disabled}
+        android_ripple={{ color: colorScheme.onSecondaryContainer, borderless: true }}
       >
         <MaterialIcons
           name={succeeded ? "check" : "search"}
           size={24}
-          color={disabled ? colorScheme.onSurfaceVariant : colorScheme.onPrimary}
+          color={disabled ? `${colorScheme.onSurface}61` : colorScheme.onSecondaryContainer}
         />
-      </TouchableOpacity>
+      </Pressable>
     </View>
   );
 }

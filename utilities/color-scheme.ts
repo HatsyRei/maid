@@ -35,6 +35,13 @@ export interface ColorScheme {
   surfaceVariant: string;
   onSurfaceVariant: string;
 
+  // Tonal surface containers (Material 3 elevation)
+  surfaceContainerLowest: string;
+  surfaceContainerLow: string;
+  surfaceContainer: string;
+  surfaceContainerHigh: string;
+  surfaceContainerHighest: string;
+
   // Utility
   outline: string;
   outlineVariant: string;
@@ -53,6 +60,9 @@ export function createColorScheme(seedColor: string, brightness: Brightness = "l
   const theme = themeFromSourceColor(argbFromHex(cleanedSeedColor));
 
   const scheme = brightness === "light" ? theme.schemes.light : theme.schemes.dark;
+
+  const isLight = brightness === "light";
+  const neutralTone = (tone: number) => hexFromArgb(theme.palettes.neutral.tone(tone));
 
   return {
     brightness,
@@ -76,6 +86,11 @@ export function createColorScheme(seedColor: string, brightness: Brightness = "l
     onSurface: hexFromArgb(scheme.onSurface),
     surfaceVariant: hexFromArgb(scheme.surfaceVariant - 0x00303030),
     onSurfaceVariant: hexFromArgb(scheme.onSurfaceVariant),
+    surfaceContainerLowest: neutralTone(isLight ? 100 : 4),
+    surfaceContainerLow: neutralTone(isLight ? 96 : 10),
+    surfaceContainer: neutralTone(isLight ? 94 : 12),
+    surfaceContainerHigh: neutralTone(isLight ? 92 : 17),
+    surfaceContainerHighest: neutralTone(isLight ? 90 : 22),
     outline: hexFromArgb(scheme.outline),
     outlineVariant: hexFromArgb(scheme.outlineVariant),
     shadow: hexFromArgb(scheme.shadow),

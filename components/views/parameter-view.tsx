@@ -12,10 +12,11 @@ function ParameterView() {
 
   const styles = StyleSheet.create({
     container: {
-      backgroundColor: colorScheme.surfaceVariant,
-      borderRadius: 24,
-      padding: 16,
       gap: 8,
+      paddingTop: 16,
+      marginTop: 4,
+      borderTopWidth: 1,
+      borderTopColor: colorScheme.outlineVariant,
     },
     titleRow: {
       flexDirection: "row",
@@ -26,6 +27,7 @@ function ParameterView() {
     title: {
       ...typography.titleSmall,
       color: colorScheme.onSurfaceVariant,
+      marginLeft: 16,
     },
   });
 
@@ -53,7 +55,7 @@ function ParameterView() {
           icon="add"
           size={24}
           color={colorScheme.onSurfaceVariant}
-          style={{ margin: 0 }}
+          style={{ margin: 0, padding: 12 }}
           onPress={addParameter}
         />
       </View>
@@ -169,7 +171,7 @@ function ParameterViewItem(props: ParameterViewItemProps) {
         icon="delete"
         size={24}
         color={colorScheme.onSurfaceVariant}
-        style={{ margin: 0 }}
+        style={{ margin: 0, padding: 12 }}
         onPress={props.onDelete}
       />
     </View>

@@ -10,11 +10,11 @@ function Settings() {
     container: {
       flex: 1,
       backgroundColor: colorScheme.surface,
-      paddingVertical: 8,
     },
     content: {
       flexDirection: "column",
-      paddingBottom: 16,
+      padding: 16,
+      gap: 16,
     },
   });
 

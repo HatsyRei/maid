@@ -10,24 +10,26 @@ function ModelSettingsGroup() {
   const { colorScheme } = useSystem();
 
   const styles = StyleSheet.create({
-    view: {
+    card: {
       alignItems: "stretch",
       justifyContent: "flex-start",
       gap: 16,
-      paddingHorizontal: 16,
-      marginTop: 32,
+      backgroundColor: colorScheme.surfaceContainerLow,
+      borderRadius: 24,
+      padding: 16,
     },
     title: {
       ...typography.titleSmall,
       color: colorScheme.primary,
-      marginLeft: 8,
-      marginBottom: 8,
+      marginTop: 8,
+      marginLeft: 16,
+      marginBottom: 12,
     }
   });
 
   return (
-    <View style={styles.view}>
-      <Text style={styles.title}>OAI-compatible Endpoint</Text>
+    <View style={styles.card}>
+      <Text style={styles.title}>Endpoint Settings</Text>
       <BaseUrlField />
       <ApiKeyField />
       <HeaderView />
