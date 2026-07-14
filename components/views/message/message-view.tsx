@@ -18,9 +18,11 @@ function MessageView({ message }: { message: MessageNode }) {
       alignItems: "flex-start",
       marginVertical: 4,
       marginHorizontal: 4,
-      paddingVertical: 8,
+      paddingTop: 14,
+      paddingBottom: 8,
       paddingHorizontal: 12,
       borderRadius: 16,
+      backgroundColor: colorScheme.surfaceContainerLow,
     },
     // Material 3 pressed state layer: onSurface at ~10% opacity laid over the
     // container while the finger is down, so a long-press registers visually

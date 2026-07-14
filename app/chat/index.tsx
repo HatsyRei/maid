@@ -329,7 +329,7 @@ function Chat() {
             <View
               style={[
                 styles.scrollThumbVisual,
-                { backgroundColor: colorScheme.outline, height: "100%" },
+                { backgroundColor: colorScheme.outlineVariant, height: "100%" },
               ]}
             />
           </Animated.View>

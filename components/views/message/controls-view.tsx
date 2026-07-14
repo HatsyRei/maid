@@ -18,7 +18,7 @@ function MessageControlsView({ message }: { message: MessageNode }) {
     },
     counter: {
       ...typography.bodyMedium,
-      color: colorScheme.secondary,
+      color: colorScheme.onSurfaceVariant,
       marginHorizontal: 4
     }
   }), [colorScheme]);
@@ -37,7 +37,7 @@ function MessageControlsView({ message }: { message: MessageNode }) {
         size={26}
         onPress={() => setMappings((prev) => lastChild(prev, message.parent!))}
         disabled={index <= 0 || !!editing || LLM.busy}
-        color={colorScheme.secondary}
+        color={colorScheme.onSurfaceVariant}
       />
       <Text
         style={styles.counter}
@@ -49,7 +49,7 @@ function MessageControlsView({ message }: { message: MessageNode }) {
         size={26}
         onPress={() => setMappings((prev) => nextChild(prev, message.parent!))}
         disabled={index === siblings.length - 1 || !!editing || LLM.busy}
-        color={colorScheme.secondary}
+        color={colorScheme.onSurfaceVariant}
       />
     </View>
   );

@@ -59,12 +59,12 @@ function PromptButton({ promptText, setPromptText }: PromptButtonProps) {
       <MaterialIconButton
         testID="stop-button"
         icon="stop"
-        size={22}
+        size={24}
         color={colorScheme.onPrimary}
         style={{
-          width: 48,
-          height: 48,
-          borderRadius: 24,
+          width: 56,
+          height: 56,
+          borderRadius: 28,
           margin: 0,
           backgroundColor: colorScheme.primary,
           justifyContent: "center",
@@ -81,15 +81,15 @@ function PromptButton({ promptText, setPromptText }: PromptButtonProps) {
     <MaterialIconButton
       testID="send-button"
       icon="send"
-      size={22}
+      size={24}
       color={colorScheme.onPrimary}
       disabledColor={colorScheme.onSurfaceVariant}
       style={{
-        width: 48,
-        height: 48,
-        borderRadius: 24,
+        width: 56,
+        height: 56,
+        borderRadius: 28,
         margin: 0,
-        backgroundColor: disabled ? colorScheme.surfaceVariant : colorScheme.primary,
+        backgroundColor: disabled ? colorScheme.surfaceContainerHighest : colorScheme.primary,
         justifyContent: "center",
         alignItems: "center",
       }}

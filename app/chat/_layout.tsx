@@ -3,16 +3,22 @@ import DrawerContent from "@/components/layout/drawer-content";
 import { useSystem } from "@/context";
 import { DrawerHeaderProps } from "@react-navigation/drawer";
 import Drawer from "expo-router/drawer";
+import { useWindowDimensions } from "react-native";
 
 function ChatLayout() {
   const { colorScheme } = useSystem();
+  const { width } = useWindowDimensions();
 
   return (
     <Drawer
       screenOptions={{
         header: (props: DrawerHeaderProps) => <Header {...props} />,
         swipeEnabled: true,
-        swipeEdgeWidth: 9999,
+        // Activate the drawer swipe from the left half of the screen. Covering
+        // the whole width (a huge value) makes the drawer's pan gesture track
+        // touches on the header too, which suppresses the native ripple on the
+        // hamburger/settings icons; keeping it to half leaves those clear.
+        swipeEdgeWidth: width / 2,
         drawerStyle: {
           backgroundColor: `${colorScheme.surface}f0`
         },

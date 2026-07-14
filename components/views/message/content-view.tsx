@@ -66,6 +66,10 @@ function MessageContentView({ message }: { message: MessageNode }) {
     },
     showReasoningButton: {
       alignSelf: "center",
+      height: 40,
+      justifyContent: "center",
+      paddingHorizontal: 12,
+      borderRadius: 20,
     },
     showReasoningButtonText: {
       ...typography.labelLarge,
@@ -73,7 +77,7 @@ function MessageContentView({ message }: { message: MessageNode }) {
     },
     reasoning: {
       ...typography.bodyMedium,
-      color: colorScheme.outline,
+      color: colorScheme.onSurfaceVariant,
       fontStyle: "italic",
     },
     content: {
@@ -108,25 +112,25 @@ function MessageContentView({ message }: { message: MessageNode }) {
       borderLeftColor: colorScheme.primary,
       paddingLeft: 12,
       marginLeft: 8,
-      backgroundColor: colorScheme.surfaceVariant,
+      backgroundColor: colorScheme.surfaceContainerHigh,
       color: colorScheme.onSurface,
       borderRadius: 4,
       paddingVertical: 8,
     },
     code_inline: {
-      backgroundColor: colorScheme.surfaceVariant,
+      backgroundColor: colorScheme.surfaceContainerHigh,
       color: colorScheme.onSurface,
       borderRadius: 4,
     },
     code_block: {
-      backgroundColor: colorScheme.surfaceVariant,
+      backgroundColor: colorScheme.surfaceContainerHigh,
       color: colorScheme.onSurface,
       borderWidth: 0,
       borderRadius: 4,
       padding: 8,
     },
     fence: {
-      backgroundColor: colorScheme.surfaceVariant,
+      backgroundColor: colorScheme.surfaceContainerHigh,
       color: colorScheme.onSurface,
       borderWidth: 0,
       borderRadius: 4,
@@ -223,7 +227,11 @@ function MessageContentView({ message }: { message: MessageNode }) {
   return (
     <View style={styles.view}>
       {reasoning && (
-        <TouchableHighlight style={styles.showReasoningButton} onPress={() => setShowReasoning(!showReasoning)}>
+        <TouchableHighlight
+          style={styles.showReasoningButton}
+          underlayColor={`${colorScheme.primary}1F`}
+          onPress={() => setShowReasoning(!showReasoning)}
+        >
           <Text style={styles.showReasoningButtonText}>{showReasoning ? "Hide Reasoning" : "Show Reasoning"}</Text>
         </TouchableHighlight>
       )}
