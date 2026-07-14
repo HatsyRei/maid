@@ -711,7 +711,7 @@
     "@babel/plugin-transform-react-jsx-development" "^7.27.1"
     "@babel/plugin-transform-react-pure-annotations" "^7.27.1"
 
-"@babel/preset-typescript@^7.16.7", "@babel/preset-typescript@^7.23.0":
+"@babel/preset-typescript@^7.16.7", "@babel/preset-typescript@^7.17.12", "@babel/preset-typescript@^7.23.0":
   version "7.28.5"
   resolved "https://registry.npmjs.org/@babel/preset-typescript/-/preset-typescript-7.28.5.tgz"
   integrity sha512-+bQy5WOI2V6LJZpPVxY+yp66XdZ2yifu0Mc1aP5CQKgjn4QM5IN2i5fAZ4xKop47pr8rpVhiAeu+nDQa12C8+g==
@@ -3040,11 +3040,6 @@ expect@^30.0.0:
     jest-mock "30.2.0"
     jest-util "30.2.0"
 
-expo-application@~6.1.5:
-  version "6.1.5"
-  resolved "https://registry.npmjs.org/expo-application/-/expo-application-6.1.5.tgz"
-  integrity sha512-ToImFmzw8luY043pWFJhh2ZMm4IwxXoHXxNoGdlhD4Ym6+CCmkAvCglg0FK8dMLzAb+/XabmOE7Rbm8KZb6NZg==
-
 expo-asset@~11.1.7:
   version "11.1.7"
   resolved "https://registry.npmjs.org/expo-asset/-/expo-asset-11.1.7.tgz"
@@ -3061,6 +3056,11 @@ expo-build-properties@~0.14.8:
     ajv "^8.11.0"
     semver "^7.6.0"
 
+expo-clipboard@~7.1.5:
+  version "7.1.5"
+  resolved "https://registry.yarnpkg.com/expo-clipboard/-/expo-clipboard-7.1.5.tgz#6980f825d4d7f53aa557d3321dd975bf65541910"
+  integrity sha512-TCANUGOxouoJXxKBW5ASJl2WlmQLGpuZGemDCL2fO5ZMl57DGTypUmagb0CVUFxDl0yAtFIcESd78UsF9o64aw==
+
 expo-constants@~17.1.7:
   version "17.1.8"
   resolved "https://registry.npmjs.org/expo-constants/-/expo-constants-17.1.8.tgz"
@@ -3075,13 +3075,6 @@ expo-crypto@~14.1.5:
   integrity sha512-ZXJoUMoUeiMNEoSD4itItFFz3cKrit6YJ/BR0hjuwNC+NczbV9rorvhvmeJmrU9O2cFQHhJQQR1fjQnt45Vu4Q==
   dependencies:
     base64-js "^1.3.0"
-
-expo-device@~7.1.4:
-  version "7.1.4"
-  resolved "https://registry.npmjs.org/expo-device/-/expo-device-7.1.4.tgz"
-  integrity sha512-HS04IiE1Fy0FRjBLurr9e5A6yj3kbmQB+2jCZvbSGpsjBnCLdSk/LCii4f5VFhPIBWJLyYuN5QqJyEAw6BcS4Q==
-  dependencies:
-    ua-parser-js "^0.7.33"
 
 expo-document-picker@~13.1.6:
   version "13.1.6"
@@ -3109,7 +3102,7 @@ expo-image@^55.0.0:
 
 expo-image@~2.4.0:
   version "2.4.1"
-  resolved "https://registry.yarnpkg.com/expo-image/-/expo-image-2.4.1.tgz#c3f84795e33ea98d833fc4dad11ad750ea290b3e"
+  resolved "https://registry.npmjs.org/expo-image/-/expo-image-2.4.1.tgz"
   integrity sha512-yHp0Cy4ylOYyLR21CcH6i70DeRyLRPc0yAIPFPn4BT/BpkJNaX5QMXDppcHa58t4WI3Bb8QRJRLuAQaeCtDF8A==
 
 expo-keep-awake@~14.1.4:
@@ -5343,6 +5336,13 @@ react-is@^19.0.0, react-is@^19.1.0:
   resolved "https://registry.npmjs.org/react-is/-/react-is-19.2.4.tgz"
   integrity sha512-W+EWGn2v0ApPKgKKCy/7s7WHXkboGcsrXE+2joLyVxkbyVQfO3MUEaUQDHoSmb8TFFrSKYa9mw64WZHNHSDzYA==
 
+react-native-draggable-flatlist@^4.0.3:
+  version "4.0.3"
+  resolved "https://registry.npmjs.org/react-native-draggable-flatlist/-/react-native-draggable-flatlist-4.0.3.tgz"
+  integrity sha512-2F4x5BFieWdGq9SetD2nSAR7s7oQCSgNllYgERRXXtNfSOuAGAVbDb/3H3lP0y5f7rEyNwabKorZAD/SyyNbDw==
+  dependencies:
+    "@babel/preset-typescript" "^7.17.12"
+
 react-native-drawer-layout@^4.2.2:
   version "4.2.2"
   resolved "https://registry.npmjs.org/react-native-drawer-layout/-/react-native-drawer-layout-4.2.2.tgz"
@@ -6178,11 +6178,6 @@ typescript@~5.8.3:
   resolved "https://registry.npmjs.org/typescript/-/typescript-5.8.3.tgz"
   integrity sha512-p1diW6TqL9L07nNxvRMM7hMMw4c5XOo/1ibL4aAIGmSAt9slTE1Xgw5KWuof2uTOvCg9BY7ZRi+GaF+7sfgPeQ==
 
-ua-parser-js@^0.7.33:
-  version "0.7.41"
-  resolved "https://registry.npmjs.org/ua-parser-js/-/ua-parser-js-0.7.41.tgz"
-  integrity sha512-O3oYyCMPYgNNHuO7Jjk3uacJWZF8loBgwrfd/5LE/HyZ3lUIOdniQ7DNXJcIgZbwioZxk0fLfI4EVnetdiX5jg==
-
 ua-parser-js@^1.0.35:
   version "1.0.41"
   resolved "https://registry.npmjs.org/ua-parser-js/-/ua-parser-js-1.0.41.tgz"
@@ -6444,9 +6439,9 @@ write-file-atomic@^4.0.2:
     signal-exit "^3.0.7"
 
 ws@^6.2.3:
-  version "6.2.3"
-  resolved "https://registry.npmjs.org/ws/-/ws-6.2.3.tgz"
-  integrity sha512-jmTjYU0j60B+vHey6TfR3Z7RD61z/hmxBS3VMSGIrroOWXQEneK1zNuotOUrGyBHQj0yrpsLHPWtigEFd13ndA==
+  version "6.2.4"
+  resolved "https://registry.npmjs.org/ws/-/ws-6.2.4.tgz"
+  integrity sha512-PNIUUyLI5YpkJZj60YBzX1o0ByQ4ovvfmq9N/Kig/PAYbVlGyz4R6G0SEWrD0O9acc0sT2+IdMBVLFv8FSi0Nw==
   dependencies:
     async-limiter "~1.0.0"
 
@@ -6456,9 +6451,9 @@ ws@^7, ws@^7.5.10:
   integrity sha512-+dbF1tHwZpXcbOJdVOkzLDxZP1ailvSxM6ZweXTegylPny803bFhA+vqBYw4s31NSAk4S2Qz+AKXK9a4wkdjcQ==
 
 ws@^8.11.0, ws@^8.12.1:
-  version "8.19.0"
-  resolved "https://registry.npmjs.org/ws/-/ws-8.19.0.tgz"
-  integrity sha512-blAT2mjOEIi0ZzruJfIhb3nps74PRWTCz1IjglWEEpQl5XS/UNama6u2/rjFkDDouqr4L67ry+1aGIALViWjDg==
+  version "8.21.0"
+  resolved "https://registry.npmjs.org/ws/-/ws-8.21.0.tgz"
+  integrity sha512-Vsp28b7DRcimFQvrqu2Wek3z1iYxDCWqHYB8Qsnk/S4RfaCQzPGPyBNuVjJV3cd6UiKtUtp6sNM77gWvzcCH+g==
 
 xcode@^3.0.1:
   version "3.0.1"
