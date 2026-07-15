@@ -6,10 +6,10 @@ import {
   Dimensions,
   LayoutRectangle,
   Modal,
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   TouchableWithoutFeedback,
   View,
 } from "react-native";
@@ -144,8 +144,8 @@ function Dropdown<T>({
                   : item.value == selectedValue;
                 return (
                   <Fragment key={`${item.label}-${idx}`}>
-                    <TouchableOpacity
-                      style={styles.itemBtn}
+                    <Pressable
+                      style={({ pressed }) => [styles.itemBtn, pressed && { opacity: 0.7 }]}
                       onPress={() => {
                         onValueChange(item.value);
                         closeMenu();
@@ -162,7 +162,7 @@ function Dropdown<T>({
                       ) : (
                         item.label
                       )}
-                    </TouchableOpacity>
+                    </Pressable>
                   </Fragment>
                 );
               })}
@@ -179,7 +179,7 @@ function Dropdown<T>({
 
   return (
     <View ref={rootRef} style={styles.rootWrapper} collapsable={false}>
-      <TouchableOpacity style={styles.root} onPress={openMenu} activeOpacity={0.7}>
+      <Pressable style={({ pressed }) => [styles.root, pressed && { opacity: 0.7 }]} onPress={openMenu}>
         {typeof selectedItem?.selectedLabel === "string" ? (
           <Text style={styles.label} numberOfLines={1} ellipsizeMode="tail">
             {selectedItem.selectedLabel}
@@ -193,7 +193,7 @@ function Dropdown<T>({
           color={colorScheme.onSecondaryContainer}
           style={styles.caret}
         />
-      </TouchableOpacity>
+      </Pressable>
       {open && Popover}
     </View>
   );

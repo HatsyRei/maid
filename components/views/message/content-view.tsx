@@ -8,7 +8,7 @@ import { randomUUID } from "expo-crypto";
 import { Image, type ImageLoadEventData } from "expo-image";
 import { addNode, branchNode, getConversation, MessageNode, updateContent } from "message-nodes";
 import { memo, useEffect, useMemo, useState } from "react";
-import { StyleSheet, Text, TextInput, TouchableHighlight, View } from "react-native";
+import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
 // The markdown library's default image style is `{ flex: 1 }` with no height,
 // so a bare ![](url) collapses to zero height and never appears. Render images
@@ -227,13 +227,15 @@ function MessageContentView({ message }: { message: MessageNode }) {
   return (
     <View style={styles.view}>
       {reasoning && (
-        <TouchableHighlight
-          style={styles.showReasoningButton}
-          underlayColor={`${colorScheme.primary}1F`}
+        <Pressable
+          style={({ pressed }) => [
+            styles.showReasoningButton,
+            pressed && { backgroundColor: `${colorScheme.primary}1F` },
+          ]}
           onPress={() => setShowReasoning(!showReasoning)}
         >
           <Text style={styles.showReasoningButtonText}>{showReasoning ? "Hide Reasoning" : "Show Reasoning"}</Text>
-        </TouchableHighlight>
+        </Pressable>
       )}
       {reasoning && showReasoning && <Text style={styles.reasoning}>{reasoning}</Text>}
       {content && <Markdown style={markdownStyle} rules={markdownRules}>{content}</Markdown>}

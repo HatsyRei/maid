@@ -5,7 +5,7 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import * as FileSystem from "expo-file-system";
 import { deleteNode, getRootMapping, MessageNode, updateContent } from "message-nodes";
 import { useEffect, useState } from "react";
-import { GestureResponderEvent, LayoutRectangle, StyleSheet, Text, TextInput, TouchableOpacity } from "react-native";
+import { GestureResponderEvent, LayoutRectangle, Pressable, StyleSheet, Text, TextInput } from "react-native";
 
 function ChatButton({ node, testID }: { node: MessageNode<string>, testID?: string }) {
   const { root, setRoot, mappings, setMappings } = useChat();
@@ -119,12 +119,13 @@ function ChatButton({ node, testID }: { node: MessageNode<string>, testID?: stri
     
   return (
     <>
-      {!rename && <TouchableOpacity
+      {!rename && <Pressable
         testID={testID}
         key={`${node.id}-button`}
-        style={[
+        style={({ pressed }) => [
           styles.button,
-          root === node.id ? styles.buttonActive : null
+          root === node.id ? styles.buttonActive : null,
+          pressed && { opacity: 0.7 },
         ]}
         onPress={() => setRoot(node.id)}
         onLongPress={open}
@@ -138,7 +139,7 @@ function ChatButton({ node, testID }: { node: MessageNode<string>, testID?: stri
         >
           {node.metadata?.title || "New Chat"}
         </Text>
-      </TouchableOpacity>}
+      </Pressable>}
       {rename && <TextInput
         testID={`${testID}-textfield`}
         key={`${node.id}-textfield`}
@@ -160,9 +161,9 @@ function ChatButton({ node, testID }: { node: MessageNode<string>, testID?: stri
         visible={visible}
         onClose={() => setVisible(false)}
       >
-        <TouchableOpacity
+        <Pressable
           testID={`${testID}-rename`}
-          style={styles.popoverItem}
+          style={({ pressed }) => [styles.popoverItem, pressed && { opacity: 0.7 }]}
           onPress={() => {
             setVisible(false);
             setRename(true);
@@ -170,23 +171,23 @@ function ChatButton({ node, testID }: { node: MessageNode<string>, testID?: stri
         >
           <Text style={styles.popoverButton}>Rename</Text>
           <MaterialIcons name="edit" size={20} color={colorScheme.onSurfaceVariant} />
-        </TouchableOpacity>
-        <TouchableOpacity
+        </Pressable>
+        <Pressable
           testID={`${testID}-export`}
-          style={styles.popoverItem}
+          style={({ pressed }) => [styles.popoverItem, pressed && { opacity: 0.7 }]}
           onPress={exportChat}
         >
           <Text style={styles.popoverButton}>Export</Text>
           <MaterialIcons name="file-download" size={20} color={colorScheme.onSurfaceVariant} />
-        </TouchableOpacity>
-        <TouchableOpacity
+        </Pressable>
+        <Pressable
           testID={`${testID}-delete`}
-          style={styles.popoverItem}
+          style={({ pressed }) => [styles.popoverItem, pressed && { opacity: 0.7 }]}
           onPress={confirmDeleteChat}
         >
           <Text style={[styles.popoverButton, styles.popoverButtonDestructive]}>Delete</Text>
           <MaterialIcons name="delete" size={20} color={colorScheme.error} />
-        </TouchableOpacity>
+        </Pressable>
       </Popover>
     </>
   );

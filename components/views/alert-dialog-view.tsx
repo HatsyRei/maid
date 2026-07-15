@@ -1,7 +1,7 @@
 import { useSystem } from "@/context";
 import { typography } from "@/utilities/typography";
 import { useMemo } from "react";
-import { Modal, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
+import { Modal, Pressable, StyleSheet, Text, TouchableWithoutFeedback, View } from "react-native";
 
 export type AlertButtonStyle = "default" | "cancel" | "destructive";
 
@@ -91,10 +91,10 @@ function AlertDialogView({ visible, title, message, buttons, onDismiss }: AlertD
               {message ? <Text style={styles.message}>{message}</Text> : null}
               <View style={styles.actions}>
                 {buttons.map((button, index) => (
-                  <TouchableOpacity
+                  <Pressable
                     key={`${button.text}-${index}`}
                     testID={`alert-dialog-button-${index}`}
-                    style={styles.button}
+                    style={({ pressed }) => [styles.button, pressed && { opacity: 0.7 }]}
                     onPress={() => {
                       onDismiss();
                       button.onPress?.();
@@ -103,7 +103,7 @@ function AlertDialogView({ visible, title, message, buttons, onDismiss }: AlertD
                     <Text style={[styles.buttonText, { color: colorForStyle(button.style) }]}>
                       {button.text}
                     </Text>
-                  </TouchableOpacity>
+                  </Pressable>
                 ))}
               </View>
             </View>

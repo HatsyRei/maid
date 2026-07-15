@@ -3,7 +3,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Pressable, StyleProp, ViewStyle } from "react-native";
 
 interface IconButtonProps {
-  icon: string;
+  icon: keyof typeof MaterialIcons.glyphMap;
   testID?: string;
   size?: number;
   color?: string;
@@ -45,7 +45,7 @@ export function MaterialIconButton(props: IconButtonProps) {
       disabled={props.disabled}
     >
       <MaterialIcons
-        name={props.icon as any}
+        name={props.icon}
         size={size}
         color={iconColor}
       />

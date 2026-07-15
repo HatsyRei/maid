@@ -1,7 +1,7 @@
 import Header from "@/components/layout/chat-header";
 import DrawerContent from "@/components/layout/drawer-content";
 import { useSystem } from "@/context";
-import { DrawerHeaderProps } from "@react-navigation/drawer";
+import { DrawerContentComponentProps, DrawerHeaderProps } from "@react-navigation/drawer";
 import Drawer from "expo-router/drawer";
 import { useWindowDimensions } from "react-native";
 
@@ -26,7 +26,7 @@ function ChatLayout() {
           backgroundColor: colorScheme.surface,
         },
       }}
-      drawerContent={(props: any) => <DrawerContent navigation={props.navigation} />}
+      drawerContent={(props: DrawerContentComponentProps) => <DrawerContent navigation={props.navigation} />}
     >
       <Drawer.Screen name="index" />
     </Drawer>

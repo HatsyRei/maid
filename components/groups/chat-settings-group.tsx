@@ -1,7 +1,7 @@
 import TextField from "@/components/fields/text-field";
 import { useSystem } from "@/context";
-import { typography } from "@/utilities/typography";
-import { StyleSheet, Text, View } from "react-native";
+import { createSettingsCardStyles } from "@/utilities/settings-styles";
+import { Text, View } from "react-native";
 
 function ChatSettingsGroup() {
   const {
@@ -14,22 +14,7 @@ function ChatSettingsGroup() {
     setSystemPrompt,
   } = useSystem();
 
-  const styles = StyleSheet.create({
-    card: {
-      backgroundColor: colorScheme.surfaceContainerLow,
-      borderRadius: 24,
-      padding: 16,
-      gap: 16,
-      alignItems: "stretch",
-    },
-    title: {
-      ...typography.titleSmall,
-      color: colorScheme.primary,
-      marginTop: 8,
-      marginLeft: 16,
-      marginBottom: 12,
-    },
-  });
+  const styles = createSettingsCardStyles(colorScheme);
 
   return (
     <View style={styles.card}>

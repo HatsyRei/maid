@@ -6,7 +6,7 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import * as Clipboard from "expo-clipboard";
 import { randomUUID } from "expo-crypto";
 import { branchNode, getConversation, MessageNode } from "message-nodes";
-import { LayoutRectangle, StyleSheet, Text, TouchableOpacity } from "react-native";
+import { LayoutRectangle, Pressable, StyleSheet, Text } from "react-native";
 
 type MenuItem = {
   label: string;
@@ -116,9 +116,9 @@ function MessageMenu({
             : colorScheme.onSurfaceVariant;
 
         return (
-          <TouchableOpacity
+          <Pressable
             key={item.label}
-            style={styles.item}
+            style={({ pressed }) => [styles.item, pressed && !item.disabled && { opacity: 0.7 }]}
             disabled={item.disabled}
             onPress={() => {
               onClose();
@@ -135,7 +135,7 @@ function MessageMenu({
               {item.label}
             </Text>
             <MaterialIcons name={item.icon} size={20} color={color} />
-          </TouchableOpacity>
+          </Pressable>
         );
       })}
     </Popover>
