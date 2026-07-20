@@ -1,9 +1,11 @@
-import { MaterialIconButton } from "@/components/buttons/icon-button";
 import { useChat, useLLM, useSystem } from "@/context";
+import { useAnimatedToggle, interpolateColor } from "@/hooks/use-animated-toggle";
 import { createStreamWriter } from "@/utilities/stream-writer";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { randomUUID } from "expo-crypto";
 import { addNode, getConversation } from "message-nodes";
 import { Dispatch, SetStateAction } from "react";
+import { Animated, Pressable, StyleSheet } from "react-native";
 
 interface PromptButtonProps {
   promptText: string; 
@@ -14,6 +16,18 @@ function PromptButton({ promptText, setPromptText }: PromptButtonProps) {
   const { mappings, setMappings, root, setRoot } = useChat();
   const { colorScheme, systemPrompt } = useSystem();
   const LLM = useLLM();
+
+  const busy = LLM.ready && LLM.busy;
+  const sendDisabled = !LLM.ready || promptText.trim().length === 0;
+
+  // `filled` = the button wears its active palette (white fill, dark icon):
+  // true while streaming (stop) or when a message is ready to send.
+  const fill = useAnimatedToggle(busy || !sendDisabled);
+  const busyProgress = useAnimatedToggle(busy);
+
+  const backgroundColor = interpolateColor(fill, colorScheme.surfaceContainerHigh, "#FFFFFF");
+  const inverseFill = fill.interpolate({ inputRange: [0, 1], outputRange: [1, 0] });
+  const inverseBusy = busyProgress.interpolate({ inputRange: [0, 1], outputRange: [1, 0] });
 
   const prompt = () => {
     if (!LLM.ready) return;
@@ -54,49 +68,55 @@ function PromptButton({ promptText, setPromptText }: PromptButtonProps) {
     LLM.prompt(conversation, writer.push).finally(writer.flush);
   };
 
-  if (LLM.ready && LLM.busy) {
-    return (
-      <MaterialIconButton
-        testID="stop-button"
-        icon="stop"
-        size={24}
-        color={colorScheme.onPrimary}
+  const disabled = !busy && sendDisabled;
+
+  return (
+    <Pressable
+      testID={busy ? "stop-button" : "send-button"}
+      disabled={disabled}
+      style={({ pressed }) => ({
+        opacity: pressed && !disabled ? 0.7 : 1,
+      })}
+      onPress={busy ? LLM.stop : prompt}
+    >
+      <Animated.View
         style={{
-          width: 56,
-          height: 56,
-          borderRadius: 28,
-          margin: 0,
-          backgroundColor: colorScheme.primary,
+          width: 48,
+          height: 48,
+          borderRadius: 24,
+          backgroundColor,
           justifyContent: "center",
           alignItems: "center",
         }}
-        onPress={LLM.stop}
-      />
-    );
-  }
-
-  const disabled = !LLM.ready || promptText.trim().length === 0;
-
-  return (
-    <MaterialIconButton
-      testID="send-button"
-      icon="send"
-      size={24}
-      color={colorScheme.onPrimary}
-      disabledColor={colorScheme.onSurfaceVariant}
-      style={{
-        width: 56,
-        height: 56,
-        borderRadius: 28,
-        margin: 0,
-        backgroundColor: disabled ? colorScheme.surfaceContainerHighest : colorScheme.primary,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-      onPress={prompt}
-      disabled={disabled}
-    />
+      >
+        {/* Enabled send arrow (dark) */}
+        <Animated.View
+          style={[StyleSheet.absoluteFill, styles.center, { opacity: Animated.multiply(fill, inverseBusy) }]}
+        >
+          <MaterialIcons name="arrow-upward" size={24} color="#000000" />
+        </Animated.View>
+        {/* Disabled send arrow (muted) */}
+        <Animated.View
+          style={[StyleSheet.absoluteFill, styles.center, { opacity: Animated.multiply(inverseFill, inverseBusy) }]}
+        >
+          <MaterialIcons name="arrow-upward" size={24} color={colorScheme.onSurfaceVariant} />
+        </Animated.View>
+        {/* Streaming stop icon (dark) */}
+        <Animated.View
+          style={[StyleSheet.absoluteFill, styles.center, { opacity: busyProgress }]}
+        >
+          <MaterialIcons name="stop" size={24} color="#000000" />
+        </Animated.View>
+      </Animated.View>
+    </Pressable>
   );
 }
+
+const styles = StyleSheet.create({
+  center: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+});
 
 export default PromptButton;

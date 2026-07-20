@@ -1,8 +1,8 @@
 import { useSystem } from "@/context";
+import { typography } from "@/utilities/typography";
 import { useMemo, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, TextInput, View } from "react-native";
 import PromptButton from "../buttons/prompt-button";
-import TextField from "../fields/text-field";
 
 function PromptInputGroup() {
   const { colorScheme } = useSystem();
@@ -17,31 +17,40 @@ function PromptInputGroup() {
           alignItems: "flex-end",
           marginTop: 16,
           marginBottom: 8,
-          gap: 8,
-        },
-        field: {
-          flex: 1,
+          paddingLeft: 20,
+          paddingRight: 6,
+          paddingVertical: 6,
+          borderRadius: 30,
+          backgroundColor: colorScheme.surfaceContainerHigh,
         },
         input: {
+          ...typography.bodyLarge,
+          flex: 1,
+          color: colorScheme.onSurface,
+          paddingVertical: 12,
+          paddingHorizontal: 0,
+          margin: 0,
+          minHeight: 44,
           maxHeight: 120,
+          textAlignVertical: "top",
         },
       }),
-    [],
+    [colorScheme],
   );
 
   return (
     <View
       style={styles.root}
     >
-      <TextField
+      <TextInput
         testID="prompt-input"
-        label="Message"
+        placeholder="Message"
+        placeholderTextColor={colorScheme.onSurfaceVariant}
         multiline
         value={promptText}
         onChangeText={setPromptText}
-        containerStyle={styles.field}
+        underlineColorAndroid="transparent"
         style={styles.input}
-        backgroundColor={colorScheme.surface}
       />
       <PromptButton 
         promptText={promptText} 

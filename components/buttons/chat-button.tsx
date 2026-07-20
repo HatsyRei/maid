@@ -1,11 +1,12 @@
 import Popover from "@/components/views/popover-view";
 import { useChat, useDialog, useSystem } from "@/context";
+import { useAnimatedToggle, interpolateColor } from "@/hooks/use-animated-toggle";
 import { typography } from "@/utilities/typography";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import * as FileSystem from "expo-file-system";
 import { deleteNode, getRootMapping, MessageNode, updateContent } from "message-nodes";
 import { useEffect, useState } from "react";
-import { GestureResponderEvent, LayoutRectangle, Pressable, StyleSheet, Text, TextInput } from "react-native";
+import { Animated, GestureResponderEvent, LayoutRectangle, Pressable, StyleSheet, Text, TextInput } from "react-native";
 
 function ChatButton({ node, testID }: { node: MessageNode<string>, testID?: string }) {
   const { root, setRoot, mappings, setMappings } = useChat();
@@ -15,6 +16,10 @@ function ChatButton({ node, testID }: { node: MessageNode<string>, testID?: stri
   const [rename, setRename] = useState<boolean>(false);
   const [renameEvent, setRenameEvent] = useState<string>("");
   const [anchor, setAnchor] = useState<LayoutRectangle | null>(null);
+
+  const active = root === node.id;
+  const focus = useAnimatedToggle(active, 220);
+  const textColor = interpolateColor(focus, colorScheme.onSurfaceVariant, colorScheme.onSecondaryContainer);
 
   useEffect(() => {
     if (!rename) return;
@@ -124,21 +129,24 @@ function ChatButton({ node, testID }: { node: MessageNode<string>, testID?: stri
         key={`${node.id}-button`}
         style={({ pressed }) => [
           styles.button,
-          root === node.id ? styles.buttonActive : null,
           pressed && { opacity: 0.7 },
         ]}
         onPress={() => setRoot(node.id)}
         onLongPress={open}
       >
-        <Text
+        <Animated.View
           style={[
-            styles.buttonText,
-            root === node.id ? styles.buttonTextActive : null
+            StyleSheet.absoluteFill,
+            { borderRadius: 28, backgroundColor: colorScheme.secondaryContainer, opacity: focus },
           ]}
+          pointerEvents="none"
+        />
+        <Animated.Text
+          style={[styles.buttonText, { color: textColor }]}
           numberOfLines={1}
         >
           {node.metadata?.title || "New Chat"}
-        </Text>
+        </Animated.Text>
       </Pressable>}
       {rename && <TextInput
         testID={`${testID}-textfield`}
