@@ -1,4 +1,4 @@
-package com.danemadsen.maid
+package com.hatsyrei.maid
 import expo.modules.splashscreen.SplashScreenManager
 
 import android.os.Build

@@ -3,7 +3,7 @@ import type { ExpoConfig } from "expo/config";
 
 export default ({ config }: { config: ExpoConfig }): ExpoConfig => ({
   ...config,
-  name: "maid",
+  name: "Maid UI",
   slug: "maid",
   orientation: "portrait",
   icon: "./assets/images/icon.png",
@@ -13,7 +13,7 @@ export default ({ config }: { config: ExpoConfig }): ExpoConfig => ({
 
   ios: {
     supportsTablet: true,
-    bundleIdentifier: "com.danemadsen.maid",
+    bundleIdentifier: "com.hatsyrei.maid",
   },
 
   android: {
@@ -21,7 +21,7 @@ export default ({ config }: { config: ExpoConfig }): ExpoConfig => ({
       foregroundImage: "./assets/images/adaptive-icon.png",
       backgroundColor: "#000000",
     },
-    package: "com.danemadsen.maid",
+    package: "com.hatsyrei.maid",
   },
 
   web: {
@@ -41,13 +41,6 @@ export default ({ config }: { config: ExpoConfig }): ExpoConfig => ({
         imageWidth: 200,
         resizeMode: "contain",
         backgroundColor: "#000000",
-      },
-    ],
-    "expo-font",
-    [
-      "expo-build-properties",
-      {
-        android: {},
       },
     ],
   ],
