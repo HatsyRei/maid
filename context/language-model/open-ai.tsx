@@ -77,6 +77,14 @@ export function OpenAIProvider({ children }: { children: React.ReactNode }) {
     }
   }, [openai]);
 
+  // Auto-select a model once the list loads so the send button becomes usable
+  // without forcing the user to open the dropdown. Only default when there is no
+  // valid selection; a stored model that still exists in the list is preserved.
+  useEffect(() => {
+    if (models.length === 0) return;
+    setModel((current) => (current && models.includes(current) ? current : models[0]));
+  }, [models, setModel]);
+
   const refreshModels = useCallback(async () => {
     if (!openai) {
       setModels([]);
