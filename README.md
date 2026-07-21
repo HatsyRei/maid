@@ -33,7 +33,7 @@ Maid is a free and open source application for interfacing with OpenAI-compatibl
 
 > **About this fork**
 >
-> This is a personal-use fork of Maid that has been deliberately pared down to a single purpose: a lightweight client for OpenAI and OpenAI-compatible endpoints. Compared to upstream Maid, it removes on-device (llama.cpp / llama.rn) inference, all non-OpenAI providers, account sync, voice and image features. The result is a smaller, leaner app that is gentler on the battery and noticeably more fluid to use.
+> This is a personal-use fork of Maid that has been deliberately pared down to a single purpose: a lightweight client for OpenAI and OpenAI-compatible endpoints. Compared to upstream Maid, it removes on-device (llama.cpp / llama.rn) inference, all non-OpenAI providers, account sync, voice and image features. The interface has also been rebuilt around Material 3, and the app has been rebranded (as "Maid UI" under its own package id) so it can be installed alongside the original Maid rather than overwriting it. The result is a smaller, leaner app that is gentler on the battery and noticeably more fluid to use.
 >
 > The motivation is simple: on-device inference and the extra provider integrations added significant binary size, background activity and battery drain that are unnecessary when you only ever talk to a remote endpoint. Stripping them back keeps the UI responsive and the device cool.
 
@@ -51,6 +51,8 @@ Maid is a free and open source application for interfacing with OpenAI-compatibl
 
 This fork is optimised for personal use, battery efficiency and UI fluidity:
 
+- **Material 3 redesign** — the conversation view, settings, navigation drawer, model dropdown, dialogs and long-press menus have been rebuilt around Google's Material 3 / Material You design language, including a full type scale, dynamic light/dark theming, and a redesigned pill composer with an animated send button.
+- **Rebranded for side-by-side install** — the app has been renamed to **Maid UI** and ships under its own application id (`com.hatsyrei.maid`) with its own launcher icon and splash screen, so it installs alongside the original Maid instead of overwriting it.
 - **No on-device inference** — the llama.cpp / llama.rn engine and model download flow are removed, dramatically reducing app size and eliminating heavy background compute and battery drain.
 - **OpenAI-only** — the Anthropic, DeepSeek, Mistral, Novita and Ollama providers are removed; the app talks to a single OpenAI-compatible endpoint, which can also be a local server.
 - **No accounts or remote sync** — authentication and remote backup are removed; everything is stored locally for privacy and to avoid background network traffic.
