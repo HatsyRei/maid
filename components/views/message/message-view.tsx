@@ -52,6 +52,7 @@ function MessageView({ message }: { message: MessageNode }) {
     <Pressable
       style={({ pressed }) => [styles.view, pressed && styles.pressed]}
       onLongPress={open}
+      delayLongPress={250}
       unstable_pressDelay={80}
     >
       <View style={styles.headerRow}>

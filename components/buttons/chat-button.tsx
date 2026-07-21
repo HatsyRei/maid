@@ -133,6 +133,7 @@ function ChatButton({ node, testID }: { node: MessageNode<string>, testID?: stri
         ]}
         onPress={() => setRoot(node.id)}
         onLongPress={open}
+        delayLongPress={250}
       >
         <Animated.View
           style={[
