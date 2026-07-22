@@ -5,6 +5,7 @@ import { useIsFocused } from "expo-router";
 import { getConversation, hasNode, MessageNode } from "message-nodes";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Animated, FlatList, NativeScrollEvent, NativeSyntheticEvent, PanResponder, StyleSheet, View } from "react-native";
+import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 
 const SCROLL_THUMB_HEIGHT = 48;
 const SCROLL_THUMB_IDLE_TIMEOUT = 1200;
@@ -285,8 +286,10 @@ function Chat() {
   }
 
   return (
-    <View
+    <KeyboardAvoidingView
       testID="chat-page"
+      behavior="padding"
+      automaticOffset
       style={styles.view}
     >
       <View
@@ -336,7 +339,7 @@ function Chat() {
         </View>}
       </View>
       <PromptInputGroup />
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 

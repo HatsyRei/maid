@@ -1,7 +1,8 @@
 import ChatSettingsGroup from "@/components/groups/chat-settings-group";
 import ModelSettingsGroup from "@/components/groups/model-settings-group";
 import { useSystem } from "@/context";
-import { ScrollView, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 
 function Settings() {
   const { colorScheme } = useSystem();
@@ -19,14 +20,15 @@ function Settings() {
   });
 
   return (
-    <ScrollView
+    <KeyboardAwareScrollView
       testID="settings-page"
-      style={styles.container} 
+      style={styles.container}
       contentContainerStyle={styles.content}
+      bottomOffset={16}
     >
       <ModelSettingsGroup />
       <ChatSettingsGroup />
-    </ScrollView>
+    </KeyboardAwareScrollView>
   );
 }
 

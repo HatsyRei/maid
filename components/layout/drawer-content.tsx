@@ -7,7 +7,8 @@ import { randomUUID } from "expo-crypto";
 import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system/legacy";
 import { addNode, getRootMapping, getRoots } from "message-nodes";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 
 function DrawerContent({ navigation }: { navigation?: { closeDrawer: () => void } }) {
   const { mappings, setMappings, setRoot } = useChat();
@@ -145,9 +146,9 @@ function DrawerContent({ navigation }: { navigation?: { closeDrawer: () => void 
         </View>
       </View>
       <View style={styles.divider} />
-      <ScrollView style={styles.sessions}>
+      <KeyboardAwareScrollView style={styles.sessions} bottomOffset={16}>
         {getRoots<string>(mappings).map((root, index) => <ChatButton testID={`chat-button-${index}`} key={root.id} node={root} />)}
-      </ScrollView>
+      </KeyboardAwareScrollView>
     </View>
   );
 }
