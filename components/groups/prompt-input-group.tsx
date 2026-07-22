@@ -16,7 +16,7 @@ function PromptInputGroup() {
           flexDirection: "row",
           alignItems: "flex-end",
           marginTop: 16,
-          marginBottom: 8,
+          marginBottom: 16,
           paddingLeft: 20,
           paddingRight: 6,
           paddingVertical: 6,
