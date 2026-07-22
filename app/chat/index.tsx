@@ -5,7 +5,9 @@ import { useIsFocused } from "expo-router";
 import { getConversation, hasNode, MessageNode } from "message-nodes";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Animated, FlatList, NativeScrollEvent, NativeSyntheticEvent, PanResponder, StyleSheet, View } from "react-native";
-import { KeyboardAvoidingView } from "react-native-keyboard-controller";
+import { useReanimatedKeyboardAnimation } from "react-native-keyboard-controller";
+import Reanimated, { useAnimatedStyle } from "react-native-reanimated";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const SCROLL_THUMB_HEIGHT = 48;
 const SCROLL_THUMB_IDLE_TIMEOUT = 1200;
@@ -19,6 +21,22 @@ function Chat() {
   const { mappings, root } = useChat();
   const { refreshModels } = useLLM();
   const isFocused = useIsFocused();
+  const insets = useSafeAreaInsets();
+  // Drive keyboard avoidance from the IME animation height rather than from a
+  // measured view position. The old KeyboardAvoidingView `automaticOffset`
+  // measured the composer's absolute window position asynchronously
+  // (viewPositionInWindow), which raced with safe-area/inset settling on
+  // edge-to-edge Android (Expo 56+) and produced inconsistent results across
+  // launches — sometimes leaving the pill partially or fully behind the
+  // keyboard. The keyboard height is deterministic and needs no view measure.
+  const { height: keyboardHeight } = useReanimatedKeyboardAnimation();
+  const keyboardAvoidStyle = useAnimatedStyle(() => {
+    // `height` is negative while the keyboard is open; negate for the on-screen
+    // keyboard height. Subtract the bottom inset because the composer already
+    // sits that far above the physical bottom (SafeAreaView bottom padding), so
+    // only the remainder must be lifted to reach the top of the keyboard.
+    return { paddingBottom: Math.max(-keyboardHeight.value - insets.bottom, 0) };
+  });
   const listRef = useRef<FlatList<MessageNode>>(null);
   const dragStartOffsetRef = useRef(0);
   const metricsRef = useRef({
@@ -286,11 +304,9 @@ function Chat() {
   }
 
   return (
-    <KeyboardAvoidingView
+    <Reanimated.View
       testID="chat-page"
-      behavior="padding"
-      automaticOffset
-      style={styles.view}
+      style={[styles.view, keyboardAvoidStyle]}
     >
       <View
         style={styles.listContainer}
@@ -339,7 +355,7 @@ function Chat() {
         </View>}
       </View>
       <PromptInputGroup />
-    </KeyboardAvoidingView>
+    </Reanimated.View>
   );
 }
 

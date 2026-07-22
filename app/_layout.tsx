@@ -31,7 +31,15 @@ function RootLayoutContent() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
-        <KeyboardProvider>
+        {/*
+          navigationBarTranslucent MUST match the app's edge-to-edge config
+          (edgeToEdgeEnabled=true, transparent navigationBarColor). Without it,
+          keyboard-controller subtracts the navigation-bar inset from the
+          reported keyboard height (KeyboardAnimationCallback.getCurrentKeyboardHeight),
+          so on edge-to-edge Android (15/16) the composer is left under-lifted by
+          the nav-bar height and its bottom slice sits behind the keyboard.
+        */}
+        <KeyboardProvider navigationBarTranslucent>
           <StatusBar backgroundColor={colorScheme.surface} />
           <SafeAreaView
             edges={Platform.OS === "android" ? ["top", "bottom"] : []}
