@@ -7,6 +7,7 @@ import * as FileSystem from "expo-file-system/legacy";
 import { deleteNode, getRootMapping, MessageNode, updateContent } from "message-nodes";
 import { useEffect, useState } from "react";
 import { Animated, GestureResponderEvent, LayoutRectangle, Pressable, StyleSheet, Text, TextInput } from "react-native";
+import { KeyboardController } from "react-native-keyboard-controller";
 
 function ChatButton({ node, testID }: { node: MessageNode<string>, testID?: string }) {
   const { root, setRoot, mappings, setMappings } = useChat();
@@ -49,6 +50,10 @@ function ChatButton({ node, testID }: { node: MessageNode<string>, testID?: stri
     const filename = `${node.metadata?.title || "New Chat"}.json`;
 
     const json = JSON.stringify(rootMapping, null, 2);
+
+    // Dismiss the keyboard before the SAF Activity so returning to the app does
+    // not leave the open drawer in a stale, unpainted state (see drawer-content).
+    await KeyboardController.dismiss();
 
     const perms = await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
     if (!perms.granted) return;

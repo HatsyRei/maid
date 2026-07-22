@@ -9,7 +9,7 @@ import * as FileSystem from "expo-file-system/legacy";
 import { addNode, getRootMapping, getRoots } from "message-nodes";
 import { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
+import { KeyboardAwareScrollView, KeyboardController } from "react-native-keyboard-controller";
 
 function DrawerContent({ navigation }: { navigation?: { closeDrawer: () => void } }) {
   const { mappings, setMappings, setRoot } = useChat();
@@ -21,6 +21,12 @@ function DrawerContent({ navigation }: { navigation?: { closeDrawer: () => void 
 
     setFileOperationPending(true);
     try {
+      // Dismiss the keyboard (and wait for the inset relayout to settle) before
+      // launching the picker Activity. Otherwise the keyboard-hide relayout on
+      // resume disturbs the drawer's native views without re-running its
+      // Reanimated worklet, leaving the open drawer invisible until swiped.
+      await KeyboardController.dismiss();
+
       const result = await DocumentPicker.getDocumentAsync({
         type: "application/json",
         multiple: true,
@@ -53,6 +59,8 @@ function DrawerContent({ navigation }: { navigation?: { closeDrawer: () => void 
 
     setFileOperationPending(true);
     try {
+      await KeyboardController.dismiss();
+
       const perms = await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
       if (!perms.granted) return;
 
