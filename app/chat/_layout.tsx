@@ -13,11 +13,11 @@ function ChatLayout() {
       screenOptions={{
         header: (props: DrawerHeaderProps) => <Header {...props} />,
         swipeEnabled: true,
-        // Activate the drawer swipe from the left half of the screen. Covering
-        // the whole width (a huge value) makes the drawer's pan gesture track
-        // touches on the header too, which suppresses the native ripple on the
-        // hamburger/settings icons; keeping it to half leaves those clear.
+        // Keep opening available across the left half, but tolerate the small
+        // vertical drift common in horizontal swipes over the chat list.
         swipeEdgeWidth: width / 2,
+        swipeMinDistance: 24,
+        configureGestureHandler: (gesture) => gesture.failOffsetY([-24, 24]),
         drawerStyle: {
           backgroundColor: `${colorScheme.surface}f0`
         },

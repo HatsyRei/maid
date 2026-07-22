@@ -7,14 +7,19 @@ import { randomUUID } from "expo-crypto";
 import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system/legacy";
 import { addNode, getRootMapping, getRoots } from "message-nodes";
+import { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 
 function DrawerContent({ navigation }: { navigation?: { closeDrawer: () => void } }) {
   const { mappings, setMappings, setRoot } = useChat();
   const { colorScheme, systemPrompt } = useSystem();
+  const [fileOperationPending, setFileOperationPending] = useState(false);
   
   const loadMappings = async () => {
+    if (fileOperationPending) return;
+
+    setFileOperationPending(true);
     try {
       const result = await DocumentPicker.getDocumentAsync({
         type: "application/json",
@@ -35,34 +40,43 @@ function DrawerContent({ navigation }: { navigation?: { closeDrawer: () => void 
       }
     } catch (error) {
       console.warn("Failed to load mappings:", error);
+    } finally {
+      setFileOperationPending(false);
     }
   };
 
   const backupAllChats = async () => {
+    if (fileOperationPending) return;
+
     const roots = getRoots<string>(mappings);
     if (roots.length === 0) return;
 
-    const perms = await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
-    if (!perms.granted) return;
+    setFileOperationPending(true);
+    try {
+      const perms = await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
+      if (!perms.granted) return;
 
-    for (const root of roots) {
-      try {
-        const rootMapping = getRootMapping<string>(mappings, root.id);
-        const filename = `${root.metadata?.title || "New Chat"}.json`;
-        const json = JSON.stringify(rootMapping, null, 2);
+      await Promise.all(roots.map(async (root) => {
+        try {
+          const rootMapping = getRootMapping<string>(mappings, root.id);
+          const filename = `${root.metadata?.title || "New Chat"}.json`;
+          const json = JSON.stringify(rootMapping, null, 2);
 
-        const fileUri = await FileSystem.StorageAccessFramework.createFileAsync(
-          perms.directoryUri,
-          filename,
-          "application/json"
-        );
+          const fileUri = await FileSystem.StorageAccessFramework.createFileAsync(
+            perms.directoryUri,
+            filename,
+            "application/json"
+          );
 
-        await FileSystem.writeAsStringAsync(fileUri, json, {
-          encoding: FileSystem.EncodingType.UTF8,
-        });
-      } catch (error) {
-        console.warn(`Failed to back up chat: ${root.metadata?.title}`, error);
-      }
+          await FileSystem.writeAsStringAsync(fileUri, json, {
+            encoding: FileSystem.EncodingType.UTF8,
+          });
+        } catch (error) {
+          console.warn(`Failed to back up chat: ${root.metadata?.title}`, error);
+        }
+      }));
+    } finally {
+      setFileOperationPending(false);
     }
   };
 
@@ -127,6 +141,7 @@ function DrawerContent({ navigation }: { navigation?: { closeDrawer: () => void 
             icon="folder-open"
             style={styles.button}
             size={24}
+            disabled={fileOperationPending}
             onPress={loadMappings}
           />
           <MaterialIconButton
@@ -134,6 +149,7 @@ function DrawerContent({ navigation }: { navigation?: { closeDrawer: () => void 
             icon="save-alt"
             style={styles.button}
             size={24}
+            disabled={fileOperationPending}
             onPress={backupAllChats}
           />
           <MaterialIconButton

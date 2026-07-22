@@ -43,6 +43,7 @@ function ChatButton({ node, testID }: { node: MessageNode<string>, testID?: stri
   };
 
   const exportChat = async () => {
+    setVisible(false);
     const rootMapping = getRootMapping<string>(mappings, node.id);
 
     const filename = `${node.metadata?.title || "New Chat"}.json`;
