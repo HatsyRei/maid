@@ -1,8 +1,8 @@
 import { MaterialIconButton } from "@/components/buttons/icon-button";
 import ModelDropdown from "@/components/dropdowns/model-dropdown";
 import { useSystem } from "@/context";
-import { DrawerHeaderProps } from "@react-navigation/drawer";
 import { useRouter } from "expo-router";
+import type { DrawerHeaderProps } from "expo-router/drawer";
 import { StyleSheet, View } from "react-native";
 
 function Header(props: DrawerHeaderProps) {

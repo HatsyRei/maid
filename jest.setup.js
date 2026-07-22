@@ -1,4 +1,3 @@
-import "@testing-library/jest-native/extend-expect";
 import { View } from "react-native";
 import "react-native-gesture-handler/jestSetup";
 

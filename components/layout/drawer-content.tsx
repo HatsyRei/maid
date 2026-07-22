@@ -5,7 +5,7 @@ import { validateMappings } from "@/utilities/mappings";
 import { typography } from "@/utilities/typography";
 import { randomUUID } from "expo-crypto";
 import * as DocumentPicker from "expo-document-picker";
-import * as FileSystem from "expo-file-system";
+import * as FileSystem from "expo-file-system/legacy";
 import { addNode, getRootMapping, getRoots } from "message-nodes";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 

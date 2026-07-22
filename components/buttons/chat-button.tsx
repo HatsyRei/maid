@@ -3,7 +3,7 @@ import { useChat, useDialog, useSystem } from "@/context";
 import { useAnimatedToggle, interpolateColor } from "@/hooks/use-animated-toggle";
 import { typography } from "@/utilities/typography";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import * as FileSystem from "expo-file-system";
+import * as FileSystem from "expo-file-system/legacy";
 import { deleteNode, getRootMapping, MessageNode, updateContent } from "message-nodes";
 import { useEffect, useState } from "react";
 import { Animated, GestureResponderEvent, LayoutRectangle, Pressable, StyleSheet, Text, TextInput } from "react-native";

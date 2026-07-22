@@ -1,7 +1,7 @@
 import PromptInputGroup from "@/components/groups/prompt-input-group";
 import MessageView from "@/components/views/message/message-view";
 import { useChat, useLLM, useSystem } from "@/context";
-import { useIsFocused } from "@react-navigation/native";
+import { useIsFocused } from "expo-router";
 import { getConversation, hasNode, MessageNode } from "message-nodes";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Animated, FlatList, NativeScrollEvent, NativeSyntheticEvent, PanResponder, StyleSheet, View } from "react-native";

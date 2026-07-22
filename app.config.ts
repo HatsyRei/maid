@@ -9,7 +9,6 @@ export default ({ config }: { config: ExpoConfig }): ExpoConfig => ({
   icon: "./assets/images/icon.png",
   scheme: "maid",
   userInterfaceStyle: "automatic",
-  newArchEnabled: true,
 
   ios: {
     supportsTablet: true,
@@ -43,6 +42,7 @@ export default ({ config }: { config: ExpoConfig }): ExpoConfig => ({
         backgroundColor: "#000000",
       },
     ],
+    "./plugins/with-maid-android",
   ],
 
   experiments: {

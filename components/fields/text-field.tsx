@@ -3,11 +3,11 @@ import { typography } from "@/utilities/typography";
 import { useEffect, useRef, useState } from "react";
 import {
   Animated,
-  NativeSyntheticEvent,
+  BlurEvent,
+  FocusEvent,
   StyleProp,
   StyleSheet,
   TextInput,
-  TextInputFocusEventData,
   TextInputProps,
   View,
   ViewStyle,
@@ -103,12 +103,12 @@ function TextField({
     letterSpacing: anim.interpolate({ inputRange: [0, 1], outputRange: [0.5, 0.4] }),
   };
 
-  const handleFocus = (e: NativeSyntheticEvent<TextInputFocusEventData>) => {
+  const handleFocus = (e: FocusEvent) => {
     setFocused(true);
     onFocus?.(e);
   };
 
-  const handleBlur = (e: NativeSyntheticEvent<TextInputFocusEventData>) => {
+  const handleBlur = (e: BlurEvent) => {
     setFocused(false);
     onBlur?.(e);
   };

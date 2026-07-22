@@ -1,9 +1,8 @@
 
 import DefaultHeader from '@/components/layout/default-header';
 import { ChatContextProvider, DialogContextProvider, LanguageModelProvider, SystemContextProvider, useSystem } from "@/context";
-import { NativeStackHeaderProps } from "@react-navigation/native-stack";
 import { Buffer } from "buffer";
-import { Stack } from "expo-router";
+import { Stack, type NativeStackHeaderProps } from "expo-router";
 import { StatusBar } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import "react-native-url-polyfill/auto";

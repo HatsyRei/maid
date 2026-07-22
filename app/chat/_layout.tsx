@@ -1,8 +1,7 @@
 import Header from "@/components/layout/chat-header";
 import DrawerContent from "@/components/layout/drawer-content";
 import { useSystem } from "@/context";
-import { DrawerContentComponentProps, DrawerHeaderProps } from "@react-navigation/drawer";
-import Drawer from "expo-router/drawer";
+import Drawer, { type DrawerContentComponentProps, type DrawerHeaderProps } from "expo-router/drawer";
 import { useWindowDimensions } from "react-native";
 
 function ChatLayout() {

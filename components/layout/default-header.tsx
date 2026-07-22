@@ -1,6 +1,6 @@
 import { MaterialIconButton } from "@/components/buttons/icon-button";
 import { useSystem } from "@/context";
-import { NativeStackHeaderProps } from "@react-navigation/native-stack";
+import type { NativeStackHeaderProps } from "expo-router";
 import { StyleSheet, Text, View } from "react-native";
 import { typography } from "@/utilities/typography";
 
