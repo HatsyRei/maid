@@ -5,6 +5,10 @@ import { randomUUID } from "expo-crypto";
 import { useEffect, useState } from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
 
+// Parameter keys are seeded with a random UUID until the user names them; a key
+// still matching this pattern is treated as "unnamed" and shown blank.
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
 function ParameterView() {
   const { colorScheme } = useSystem();
   const { parameters, setParameters } = useLLM();
@@ -95,8 +99,7 @@ function ParameterViewItem(props: ParameterViewItemProps) {
   const { colorScheme } = useSystem();
   const { parameters, setParameters } = useLLM();
 
-  const regex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-  const initialKey = regex.test(props.parameterKey) ? "" : props.parameterKey;
+  const initialKey = UUID_REGEX.test(props.parameterKey) ? "" : props.parameterKey;
   const [oldKey, setOldKey] = useState<string>("");
   const [key, setKey] = useState<string>(initialKey);
   const [value, setValue] = useState<string>(String(props.value || parameters[key] || ""));

@@ -45,9 +45,7 @@ function buildSubnetTargets(ip: string, prefixLength: number): Array<string> {
   return targets;
 }
 
-async function probeTarget(target: string): Promise<string> {
-  const baseUrl = `http://${target}:${DEFAULT_PORT}`;
-  const modelsUrl = `${baseUrl}/v1/models`;
+async function isOpenAICompatible(modelsUrl: string): Promise<boolean> {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
@@ -58,14 +56,22 @@ async function probeTarget(target: string): Promise<string> {
     });
 
     // 401/403 can still indicate a valid OpenAI-compatible endpoint.
-    if (response.status >= 200 && response.status < 500 && response.status !== 404) {
-      return `${baseUrl}/v1`;
-    }
-
-    throw new Error("Not OpenAI-compatible");
+    return response.status >= 200 && response.status < 500 && response.status !== 404;
+  } catch {
+    return false;
   } finally {
     clearTimeout(timeoutId);
   }
+}
+
+async function probeTarget(target: string): Promise<string> {
+  const baseUrl = `http://${target}:${DEFAULT_PORT}`;
+
+  if (await isOpenAICompatible(`${baseUrl}/v1/models`)) {
+    return `${baseUrl}/v1`;
+  }
+
+  throw new Error("Not OpenAI-compatible");
 }
 
 async function scanTargets(targets: Array<string>): Promise<string | undefined> {
@@ -120,23 +126,7 @@ export function normalizeBaseUrl(input: string): string | undefined {
 }
 
 export async function validateEndpoint(baseUrl: string): Promise<boolean> {
-  const modelsUrl = `${baseUrl}/models`;
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
-
-  try {
-    const response = await fetch(modelsUrl, {
-      method: "GET",
-      signal: controller.signal,
-    });
-
-    // 401/403 can still indicate a valid OpenAI-compatible endpoint.
-    return response.status >= 200 && response.status < 500 && response.status !== 404;
-  } catch {
-    return false;
-  } finally {
-    clearTimeout(timeoutId);
-  }
+  return isOpenAICompatible(`${baseUrl}/models`);
 }
 
 export async function scanForEndpoint(): Promise<string | undefined> {
