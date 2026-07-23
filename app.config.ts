@@ -8,11 +8,14 @@ export default ({ config }: { config: ExpoConfig }): ExpoConfig => ({
   orientation: "portrait",
   icon: "./assets/images/icon.png",
   scheme: "maid",
-  userInterfaceStyle: "automatic",
 
   ios: {
     supportsTablet: true,
     bundleIdentifier: "com.hatsyrei.maid",
+    // Android forces its dark theme in JS (useTheme); on iOS set it natively.
+    // Kept out of the top level so prebuild doesn't warn about the missing
+    // expo-system-ui dependency on Android (the key is a no-op there without it).
+    userInterfaceStyle: "dark",
   },
 
   android: {

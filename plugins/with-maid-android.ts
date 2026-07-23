@@ -128,12 +128,12 @@ android {
 
     buildTypes {
         debug {
-            signingConfig signingConfigs.debug
+            signingConfig = signingConfigs.debug
             versionNameSuffix "-debug"
         }
 
         release {
-            signingConfig isBundleBuild
+            signingConfig = isBundleBuild
                     ? signingConfigs.upload
                     : signingConfigs.release
         }
@@ -147,10 +147,10 @@ android {
             // cannot pick between them. The AAB does not need splits anyway -
             // Play splits it per device, and \`abiFilters\` above already limits
             // it to the ABI we ship.
-            enable !isBundleBuild
+            enable = !isBundleBuild
             reset()
             include 'arm64-v8a'
-            universalApk false
+            universalApk = false
         }
     }
 
