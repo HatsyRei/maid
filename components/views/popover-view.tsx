@@ -9,6 +9,7 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const EDGE_PADDING = 8;
 const GAP = 6;
@@ -48,11 +49,17 @@ function Popover({
   children,
 }: PopoverViewProps) {
   const { colorScheme } = useSystem();
+  // Safe-area insets describe where the system bars (status bar, Android
+  // navigation bar, notches) sit. Under Expo SDK 56 edge-to-edge is enforced,
+  // so every Modal renders behind those bars and the measured container below
+  // spans the full screen. The insets are therefore required to keep the
+  // popover clear of the system bars.
+  const insets = useSafeAreaInsets();
   const [popoverH, setPopoverH] = useState(0);
-  // Actual drawable area of the Modal window. Measured via onLayout so the
-  // clamp matches exactly what is visible (excluding the Android navigation
-  // bar) regardless of edge-to-edge / status-bar configuration. Dimensions is
-  // only used as the initial value before the first layout pass.
+  // Full Modal window size. Under edge-to-edge (Expo 56+) this spans the whole
+  // screen including the system-bar regions, so the safe-area insets above are
+  // subtracted from the clamp bounds. Dimensions is only used as the initial
+  // value before the first layout pass.
   const [container, setContainer] = useState(() => {
     const { width: w, height: h } = Dimensions.get("window");
     return { width: w, height: h };
@@ -75,13 +82,14 @@ function Popover({
     const screenW = container.width;
     const screenH = container.height;
 
-    // Bounds are the measured container inset by EDGE_PADDING, so the popover
-    // never sits behind the Android navigation bar (which lies outside the
-    // measured container).
-    const minLeft = EDGE_PADDING;
-    const maxLeft = screenW - width - EDGE_PADDING;
-    const minTop = EDGE_PADDING;
-    const maxTop = screenH - popoverH - EDGE_PADDING;
+    // Bounds are the measured container inset by EDGE_PADDING plus the
+    // safe-area insets, so the popover never sits behind the status bar or the
+    // Android navigation bar. Under edge-to-edge (Expo 56+) the container spans
+    // the full screen, so the insets are what actually exclude the system bars.
+    const minLeft = EDGE_PADDING + insets.left;
+    const maxLeft = screenW - width - EDGE_PADDING - insets.right;
+    const minTop = EDGE_PADDING + insets.top;
+    const maxTop = screenH - popoverH - EDGE_PADDING - insets.bottom;
 
     if (!anchor) {
       return { top: minTop + offY, left: minLeft + offX };
@@ -153,6 +161,10 @@ function Popover({
     container.width,
     container.height,
     width,
+    insets.top,
+    insets.bottom,
+    insets.left,
+    insets.right,
   ]);
 
   const styles = useMemo(
