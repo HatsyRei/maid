@@ -158,9 +158,12 @@ android {
         jniLibs {
             // Markdown and app images use expo-image rather than React Native's
             // Fresco pipeline, so these Fresco-only decoders are unreachable.
+            // libavif_android.so comes from expo-image's Glide avif-integration;
+            // the app only ever decodes PNG/JPEG, so AVIF support is dead weight.
             excludes += [
                 "**/libanimation-decoder-gif.so",
                 "**/libnative-imagetranscoder.so",
+                "**/libavif_android.so",
             ]
         }
     }

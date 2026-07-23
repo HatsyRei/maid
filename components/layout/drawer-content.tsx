@@ -21,10 +21,11 @@ function DrawerContent({ navigation }: { navigation?: { closeDrawer: () => void 
 
     setFileOperationPending(true);
     try {
-      // Dismiss the keyboard (and wait for the inset relayout to settle) before
-      // launching the picker Activity. Otherwise the keyboard-hide relayout on
-      // resume disturbs the drawer's native views without re-running its
-      // Reanimated worklet, leaving the open drawer invisible until swiped.
+      // Best-effort: dismiss the keyboard before launching the picker Activity.
+      // This does NOT fully fix the "drawer left unpainted after returning from
+      // the picker" bug (that's an upstream reanimated/keyboard-controller resume
+      // issue), but dismissing the keyboard first is reasonable UX and reduces the
+      // chance of hitting it.
       await KeyboardController.dismiss();
 
       const result = await DocumentPicker.getDocumentAsync({

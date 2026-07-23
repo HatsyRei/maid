@@ -4,14 +4,14 @@ import { typography } from "@/utilities/typography";
 import { StyleSheet, Text, View } from "react-native";
 
 function ModelDropdown({ small }: { small?: boolean }) {
-  const { type, models, model, setModel } = useLLM();
+  const { models, model, setModel } = useLLM();
   const { colorScheme } = useSystem();
 
-  if (!models || models.length === 0 || !setModel) {
+  if (models.length === 0) {
     return null;
   }
 
-  const items = models!.map((model) => {
+  const items = models.map((model) => {
     return {
       label: model,
       value: model
@@ -24,7 +24,7 @@ function ModelDropdown({ small }: { small?: boolean }) {
         <Dropdown
           items={items}
           selectedValue={model ?? "Select Model"}
-          onValueChange={setModel!}
+          onValueChange={setModel}
         />
       </View>
     );
@@ -45,11 +45,11 @@ function ModelDropdown({ small }: { small?: boolean }) {
   
   return (
     <View style={styles.row}>
-      <Text style={styles.title}>{type} Model</Text>
+      <Text style={styles.title}>Open AI Model</Text>
       <Dropdown
         items={items}
         selectedValue={model ?? "Select Model"}
-        onValueChange={setModel!}
+        onValueChange={setModel}
       />
     </View>
   );

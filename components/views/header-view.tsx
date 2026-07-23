@@ -8,7 +8,7 @@ import { StyleSheet, Text, TextInput, View } from "react-native";
 function HeaderView() {
   const { colorScheme } = useSystem();
   const { headers, setHeaders } = useLLM();
-  const [keys, setKeys] = useState<string[]>(Object.keys(headers || {}));
+  const [keys, setKeys] = useState<string[]>(Object.keys(headers));
 
   const styles = StyleSheet.create({
     container: {
@@ -30,8 +30,6 @@ function HeaderView() {
       marginLeft: 16,
     },
   });
-
-  if (!headers || !setHeaders) return null;
 
   const addHeader = () => {
     const newKey = randomUUID();
@@ -87,7 +85,7 @@ function HeaderViewItem(props: HeaderViewItemProps) {
   const initialKey = regex.test(props.headerKey) ? "" : props.headerKey;
   const [oldKey, setOldKey] = useState<string>("");
   const [key, setKey] = useState<string>(initialKey);
-  const [value, setValue] = useState<string>(String(props.value || headers?.[key] || ""));
+  const [value, setValue] = useState<string>(String(props.value || headers[key] || ""));
 
   const styles = StyleSheet.create({
     container: {
@@ -108,8 +106,6 @@ function HeaderViewItem(props: HeaderViewItemProps) {
       flex: 1,
     }
   });
-
-  if (!headers || !setHeaders) return null;
 
   const updateKey = () => {
     if (key.trim() === "" || key === oldKey) return;

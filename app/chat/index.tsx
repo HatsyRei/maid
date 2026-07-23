@@ -223,7 +223,7 @@ function Chat() {
   // every keystroke while the endpoint is being edited in settings.
   useEffect(() => {
     if (isFocused) {
-      refreshModels?.();
+      refreshModels();
     }
   }, [isFocused, refreshModels]);
 

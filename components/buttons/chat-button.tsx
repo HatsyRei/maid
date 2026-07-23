@@ -51,8 +51,8 @@ function ChatButton({ node, testID }: { node: MessageNode<string>, testID?: stri
 
     const json = JSON.stringify(rootMapping, null, 2);
 
-    // Dismiss the keyboard before the SAF Activity so returning to the app does
-    // not leave the open drawer in a stale, unpainted state (see drawer-content).
+    // Best-effort keyboard dismissal before the SAF Activity (see drawer-content):
+    // reasonable UX, but not a guaranteed fix for the stale-drawer-on-resume bug.
     await KeyboardController.dismiss();
 
     const perms = await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();

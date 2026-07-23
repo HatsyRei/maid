@@ -1,11 +1,5 @@
 import { MessageNode } from "message-nodes";
 
-export const LanguageModelTypes = [
-  "Open AI",
-] as const;
-
-export type LanguageModelType = typeof LanguageModelTypes[number];
-
 interface LanguageModelBaseProps {
   ready: boolean;
   busy: boolean;
@@ -42,16 +36,3 @@ interface ApiKeyMixin {
 }
 
 export type OpenAIContextProps = LanguageModelBaseProps & ModelMixin & BaseUrlMixin & HeadersMixin & ApiKeyMixin;
-
-export type LanguageModelProps = 
-| OpenAIContextProps;
-
-export type LanguageModelContextProps = 
-& LanguageModelBaseProps 
-& Partial<ModelMixin> 
-& Partial<BaseUrlMixin> 
-& Partial<ApiKeyMixin>
-& Partial<HeadersMixin>
-& {
-  type: LanguageModelType;
-}

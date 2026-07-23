@@ -1,46 +1,5 @@
-import { createContext, useContext, useMemo } from "react";
-import { OpenAIProvider, useOpenAI } from "./open-ai";
-import { LanguageModelContextProps, LanguageModelProps } from "./types";
-
-const LanguageModelContext = createContext<LanguageModelContextProps | undefined>(undefined);
-
-function LanguageModelManagementProvider({ children }: { children: React.ReactNode }) {
-  const openAI = useOpenAI();
-
-  const type = "Open AI";
-
-  const getProps = (): LanguageModelProps => {
-    return openAI;
-  };
-
-  const values = useMemo<LanguageModelContextProps>(() => ({
-    type,
-    ...getProps(),
-  }), [openAI]);
-
-  return (
-    <LanguageModelContext.Provider value={values}>
-      {children}
-    </LanguageModelContext.Provider>
-  );
-}
-
-export function LanguageModelProvider({ children }: { children: React.ReactNode }) {
-  return (
-    <OpenAIProvider>
-      <LanguageModelManagementProvider>
-        {children}
-      </LanguageModelManagementProvider>
-    </OpenAIProvider>
-  );
-}
-
-export function useLLM() {
-  const context = useContext(LanguageModelContext);
-
-  if (!context) {
-    throw new Error("useLLM must be used within a LanguageModelProvider");
-  }
-
-  return context;
-}
+// The app targets OpenAI-compatible endpoints only, so the language-model layer
+// is a thin alias over the OpenAI provider. `useLLM`/`LanguageModelProvider` are
+// kept as the public names so call sites stay backend-agnostic.
+export { OpenAIProvider as LanguageModelProvider, useOpenAI as useLLM } from "./open-ai";
+export type { OpenAIContextProps as LanguageModelContextProps } from "./types";
